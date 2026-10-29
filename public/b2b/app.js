@@ -1,150 +1,13 @@
 /* ==========================================================
-   Novel Tissues — B2B site interactions
+   Novel Tissues — home page interactions
+   Needs config.js, art.js and common.js loaded first.
    ========================================================== */
-
-// ---- Edit these before going live -------------------------------------
-const CONTACT = {
-  email: "sales@noveltissues.com", // where enquiries & mailto fallback go
-  phone: "",                        // e.g. "+91 98765 43210" (shown if set)
-  whatsapp: "",                     // digits only with country code, e.g. "919876543210"
-  endpoint: "/api/enquiry"          // POST endpoint served by server.js
-};
-// -----------------------------------------------------------------------
 
 const CAPACITY_PER_MONTH = 15000000; // 1.5 crore wipes
 const WIPES_PER_SEC = CAPACITY_PER_MONTH / (30 * 24 * 3600);
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-
-const $ = (s, el = document) => el.querySelector(s);
-const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-const inr = n => Math.round(n).toLocaleString("en-IN");
-const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-let uidN = 0;
-const uid = () => "u" + (++uidN);
 
 /* ----------------------------------------------------------
-   Product artwork (SVG) — reused by hero, catalogue, wipes lab
-   and the Brand Studio so every pack can carry any brand name.
-   ---------------------------------------------------------- */
-const PALETTES = [
-  { name: "Blush", c1: "#F9D5C8", c2: "#E98A6B", c3: "#FFF8F3", ink: "#5A2A1E", bg: "#FBE3D8" },
-  { name: "Mint", c1: "#CFEFE3", c2: "#4FB896", c3: "#FFFFFF", ink: "#154535", bg: "#DDF4EB" },
-  { name: "Sky", c1: "#D3E6FA", c2: "#5B95D6", c3: "#FFFFFF", ink: "#15305A", bg: "#E3EEFA" },
-  { name: "Butter", c1: "#F9E7A8", c2: "#E2B43C", c3: "#FFFDF4", ink: "#4A3810", bg: "#FBF0C9" },
-  { name: "Lilac", c1: "#E2D9F8", c2: "#8E78D6", c3: "#FFFFFF", ink: "#2E2257", bg: "#ECE6FA" },
-  { name: "Leaf", c1: "#DCEBC9", c2: "#7FAF4E", c3: "#FFFFFF", ink: "#2C4214", bg: "#E7F1DC" },
-  { name: "Midnight", c1: "#22305A", c2: "#F6A88A", c3: "#FBF6EF", ink: "#14213D", bg: "#C9D3EA" }
-];
-const PRODUCT_LABEL = { wipes: "Baby Wipes", pump: "Baby Shampoo", flip: "Baby Lotion", tube: "Baby Cream", jar: "Rash Cream", detergent: "Baby Laundry Liquid" };
-
-function fit(text, maxW, maxSize) {
-  const len = Math.max(String(text).length, 1);
-  return Math.min(maxSize, maxW / (len * 0.56)).toFixed(1);
-}
-
-function sheen(id) {
-  return `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#fff" stop-opacity=".0"/>
-    <stop offset=".18" stop-color="#fff" stop-opacity=".45"/>
-    <stop offset=".32" stop-color="#fff" stop-opacity="0"/>
-    <stop offset=".85" stop-color="#000" stop-opacity="0"/>
-    <stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>`;
-}
-
-function labelText(cx, y, w, o, sizes = [22, 8.5, 8.5]) {
-  const brand = esc(o.brand || "Your Brand");
-  const label = esc((o.label || "").toUpperCase());
-  const tag = esc(o.tag || "");
-  return `<text x="${cx}" y="${y}" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="${fit(o.brand || "Your Brand", w, sizes[0])}" fill="${o.ink}">${brand}</text>
-    <text x="${cx}" y="${y + sizes[1] * 2.4}" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="800" font-size="${sizes[1]}" letter-spacing="1.6" fill="${o.ink}" opacity=".75">${label}</text>
-    ${tag ? `<text x="${cx}" y="${y + sizes[1] * 2.4 + sizes[2] * 1.9}" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="${sizes[2]}" fill="${o.ink}" opacity=".65">${tag}</text>` : ""}`;
-}
-
-function productSVG(type, opts = {}) {
-  const o = Object.assign({ brand: "Your Brand", tag: "", ...PALETTES[2] }, opts);
-  if (!o.label) o.label = PRODUCT_LABEL[type];
-  const g = uid();
-  switch (type) {
-    case "wipes": {
-      const count = o.count || 72;
-      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"><defs>${sheen(g)}</defs>
-        <rect x="10" y="36" width="26" height="132" rx="5" fill="${o.c2}"/>
-        <rect x="284" y="36" width="26" height="132" rx="5" fill="${o.c2}"/>
-        <line x1="16" y1="40" x2="16" y2="164" stroke="#fff" stroke-width="3" stroke-dasharray="2 5" opacity=".6"/>
-        <line x1="304" y1="40" x2="304" y2="164" stroke="#fff" stroke-width="3" stroke-dasharray="2 5" opacity=".6"/>
-        <path d="M30 26 C110 12 210 12 290 26 L296 174 C210 188 110 188 24 174 Z" fill="${o.c1}"/>
-        <path d="M30 26 C110 12 210 12 290 26 L296 174 C210 188 110 188 24 174 Z" fill="url(#${g})"/>
-        <circle cx="58" cy="58" r="12" fill="#fff" opacity=".35"/><circle cx="76" cy="44" r="6" fill="#fff" opacity=".35"/>
-        <circle cx="268" cy="150" r="16" fill="#fff" opacity=".25"/>
-        <rect x="108" y="32" width="104" height="50" rx="18" fill="#fff"/>
-        <rect x="116" y="40" width="88" height="34" rx="12" fill="${o.c2}" opacity=".22"/>
-        <rect x="146" y="70" width="28" height="4" rx="2" fill="${o.c2}" opacity=".6"/>
-        <rect x="72" y="94" width="176" height="70" rx="18" fill="${o.c3}"/>
-        ${labelText(160, 124, 150, Object.assign({}, o, { label: `${o.label} · ${count}` }), [26, 8.5, 9])}
-        <circle cx="262" cy="64" r="20" fill="${o.c2}"/>
-        <text x="262" y="62" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="800" font-size="11" fill="#fff">${esc(count)}</text>
-        <text x="262" y="73" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="6.5" fill="#fff">WIPES</text>
-      </svg>`;
-    }
-    case "pump":
-      return `<svg viewBox="0 0 148 300" xmlns="http://www.w3.org/2000/svg"><defs>${sheen(g)}</defs>
-        <path d="M24 18 h40 v12 h-40 a6 6 0 0 1 0-12z" fill="${o.c2}"/>
-        <rect x="54" y="8" width="44" height="26" rx="7" fill="${o.c2}"/>
-        <rect x="67" y="34" width="18" height="24" fill="${o.c2}" opacity=".85"/>
-        <rect x="48" y="56" width="56" height="28" rx="7" fill="${o.c2}"/>
-        <rect x="18" y="80" width="116" height="212" rx="36" fill="${o.c1}"/>
-        <rect x="18" y="80" width="116" height="212" rx="36" fill="url(#${g})"/>
-        <rect x="30" y="134" width="92" height="118" rx="16" fill="${o.c3}"/>
-        <path d="M76 148c5 7 9 11 9 16a9 9 0 0 1-18 0c0-5 4-9 9-16z" fill="${o.c2}"/>
-        ${labelText(76, 196, 80, o, [20, 7.2, 7.5])}
-      </svg>`;
-    case "flip":
-      return `<svg viewBox="0 0 130 300" xmlns="http://www.w3.org/2000/svg"><defs>${sheen(g)}</defs>
-        <rect x="33" y="10" width="64" height="52" rx="12" fill="${o.c2}"/>
-        <rect x="33" y="28" width="64" height="4" fill="#000" opacity=".08"/>
-        <path d="M36 58 H94 C116 70 122 92 122 122 V270 Q122 292 100 292 H30 Q8 292 8 270 V122 C8 92 14 70 36 58Z" fill="${o.c1}"/>
-        <path d="M36 58 H94 C116 70 122 92 122 122 V270 Q122 292 100 292 H30 Q8 292 8 270 V122 C8 92 14 70 36 58Z" fill="url(#${g})"/>
-        <rect x="18" y="140" width="94" height="116" rx="16" fill="${o.c3}"/>
-        <circle cx="65" cy="160" r="8" fill="${o.c2}" opacity=".85"/>
-        ${labelText(65, 200, 80, o, [19, 7, 7.5])}
-      </svg>`;
-    case "tube":
-      return `<svg viewBox="0 0 120 300" xmlns="http://www.w3.org/2000/svg"><defs>${sheen(g)}</defs>
-        <rect x="12" y="8" width="96" height="20" rx="3" fill="${o.c2}"/>
-        <g stroke="#fff" stroke-width="2" opacity=".5"><line x1="22" y1="12" x2="22" y2="24"/><line x1="32" y1="12" x2="32" y2="24"/><line x1="42" y1="12" x2="42" y2="24"/><line x1="78" y1="12" x2="78" y2="24"/><line x1="88" y1="12" x2="88" y2="24"/><line x1="98" y1="12" x2="98" y2="24"/></g>
-        <path d="M12 26 H108 L96 240 Q60 248 24 240 Z" fill="${o.c1}"/>
-        <path d="M12 26 H108 L96 240 Q60 248 24 240 Z" fill="url(#${g})"/>
-        <rect x="32" y="236" width="56" height="56" rx="10" fill="${o.c2}"/>
-        <rect x="26" y="88" width="68" height="110" rx="12" fill="${o.c3}"/>
-        ${labelText(60, 136, 58, o, [16, 6.2, 6.5])}
-      </svg>`;
-    case "jar":
-      return `<svg viewBox="0 0 220 190" xmlns="http://www.w3.org/2000/svg"><defs>${sheen(g)}</defs>
-        <rect x="24" y="12" width="172" height="52" rx="14" fill="${o.c2}"/>
-        <g stroke="#000" stroke-width="2" opacity=".08">${Array.from({ length: 16 }, (_, i) => `<line x1="${36 + i * 10}" y1="18" x2="${36 + i * 10}" y2="58"/>`).join("")}</g>
-        <rect x="16" y="56" width="188" height="126" rx="30" fill="${o.c1}"/>
-        <rect x="16" y="56" width="188" height="126" rx="30" fill="url(#${g})"/>
-        <rect x="16" y="88" width="188" height="64" fill="${o.c3}"/>
-        ${labelText(110, 116, 150, o, [22, 7.5, 7.5])}
-      </svg>`;
-    case "detergent":
-      return `<svg viewBox="0 0 220 290" xmlns="http://www.w3.org/2000/svg"><defs>${sheen(g)}</defs>
-        <rect x="34" y="6" width="58" height="32" rx="7" fill="${o.c2}"/>
-        <rect x="40" y="34" width="46" height="16" fill="${o.c2}" opacity=".8"/>
-        <path fill-rule="evenodd" d="M32 46 H150 Q206 46 206 102 V262 Q206 284 184 284 H36 Q14 284 14 262 V70 Q14 46 32 46Z M122 68 H168 Q184 68 184 86 V118 Q184 134 168 134 H122 Q108 134 108 120 V82 Q108 68 122 68Z" fill="${o.c1}"/>
-        <path fill-rule="evenodd" d="M32 46 H150 Q206 46 206 102 V262 Q206 284 184 284 H36 Q14 284 14 262 V70 Q14 46 32 46Z M122 68 H168 Q184 68 184 86 V118 Q184 134 168 134 H122 Q108 134 108 120 V82 Q108 68 122 68Z" fill="url(#${g})"/>
-        <rect x="30" y="152" width="160" height="112" rx="18" fill="${o.c3}"/>
-        <circle cx="110" cy="172" r="8" fill="${o.c2}"/><circle cx="96" cy="176" r="5" fill="${o.c2}" opacity=".6"/><circle cx="124" cy="177" r="4" fill="${o.c2}" opacity=".5"/>
-        ${labelText(110, 212, 140, o, [22, 7.5, 8])}
-      </svg>`;
-  }
-  return "";
-}
-
-/* ----------------------------------------------------------
-   Loader, split text, reveals, counters
+   Loader
    ---------------------------------------------------------- */
 document.body.classList.add("loading");
 let loaded = false;
@@ -157,130 +20,6 @@ function finishLoading() {
 }
 window.addEventListener("load", () => setTimeout(finishLoading, reduceMotion ? 0 : 900));
 setTimeout(finishLoading, 3500);
-
-function splitWords(root) {
-  let i = 0;
-  const walk = node => {
-    [...node.childNodes].forEach(child => {
-      if (child.nodeType === 3) {
-        const frag = document.createDocumentFragment();
-        child.textContent.split(/(\s+)/).forEach(part => {
-          if (!part) return;
-          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(" ")); return; }
-          const w = document.createElement("span");
-          w.className = "w";
-          const inner = document.createElement("span");
-          inner.style.setProperty("--i", i++);
-          inner.textContent = part;
-          w.appendChild(inner);
-          frag.appendChild(w);
-        });
-        child.replaceWith(frag);
-      } else if (child.nodeType === 1) {
-        walk(child);
-      }
-    });
-  };
-  walk(root);
-}
-$$(".split").forEach(splitWords);
-
-// stagger sibling reveals automatically
-$$(".reveal").forEach(el => {
-  if (el.style.getPropertyValue("--d")) return;
-  const sibs = [...el.parentElement.children].filter(c => c.classList.contains("reveal"));
-  el.style.setProperty("--d", Math.min(sibs.indexOf(el), 6));
-});
-
-function animateCount(el) {
-  const to = parseFloat(el.dataset.to);
-  const dec = parseInt(el.dataset.dec || "0", 10);
-  const indian = el.dataset.indian === "1";
-  const dur = reduceMotion ? 0 : 1800;
-  const t0 = performance.now();
-  const step = now => {
-    const p = dur ? clamp((now - t0) / dur, 0, 1) : 1;
-    const e = 1 - Math.pow(2, -10 * p);
-    const v = to * (p === 1 ? 1 : e);
-    el.textContent = indian ? inr(v) : v.toFixed(dec);
-    if (p < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
-}
-
-const io = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (!entry.isIntersecting) return;
-    const el = entry.target;
-    el.classList.add("in");
-    $$(".count", el).forEach(c => { if (!c.dataset.done) { c.dataset.done = 1; animateCount(c); } });
-    if (el.classList.contains("count") && !el.dataset.done) { el.dataset.done = 1; animateCount(el); }
-    io.unobserve(el);
-  });
-}, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
-$$(".reveal, .split, .count").forEach(el => { if (!el.closest("#hero")) io.observe(el); });
-
-/* ----------------------------------------------------------
-   Nav, progress, cursor, magnetic buttons
-   ---------------------------------------------------------- */
-const nav = $("#nav");
-const progress = $("#scrollProgress");
-let lastY = 0;
-const sections = $$("main section[id]");
-const navLinks = $$(".nav-links a");
-
-function onScroll() {
-  const y = window.scrollY;
-  const max = document.documentElement.scrollHeight - innerHeight;
-  progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-  nav.classList.toggle("scrolled", y > 30);
-  const menuOpen = $("#navLinks").classList.contains("open");
-  nav.classList.toggle("hide", !menuOpen && y > 700 && y > lastY + 4);
-  if (y < lastY - 4) nav.classList.remove("hide");
-  lastY = y;
-
-  let current = "";
-  sections.forEach(s => { if (s.offsetTop - 160 <= y) current = s.id; });
-  navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + current));
-
-  heroScroll(y);
-  whyScroll();
-}
-window.addEventListener("scroll", onScroll, { passive: true });
-
-$("#burger").addEventListener("click", () => {
-  const open = $("#navLinks").classList.toggle("open");
-  $("#burger").setAttribute("aria-expanded", open);
-});
-navLinks.forEach(a => a.addEventListener("click", () => {
-  $("#navLinks").classList.remove("open");
-  $("#burger").setAttribute("aria-expanded", "false");
-}));
-
-if (finePointer && !reduceMotion) {
-  const cursor = $("#cursor");
-  let cx = 0, cy = 0, tx = 0, ty = 0;
-  window.addEventListener("mousemove", e => { tx = e.clientX; ty = e.clientY; cursor.classList.add("on"); });
-  document.addEventListener("mouseleave", () => cursor.classList.remove("on"));
-  (function loop() {
-    cx += (tx - cx) * 0.2; cy += (ty - cy) * 0.2;
-    cursor.style.transform = `translate(${cx}px, ${cy}px)`;
-    requestAnimationFrame(loop);
-  })();
-  document.addEventListener("mouseover", e => {
-    cursor.classList.toggle("big", !!e.target.closest("a, button, .plant-node, .wipe-stage, .plant-card, .swatch, label, summary"));
-  });
-
-  $$(".magnetic").forEach(btn => {
-    btn.addEventListener("mousemove", e => {
-      const r = btn.getBoundingClientRect();
-      const dx = e.clientX - (r.left + r.width / 2);
-      const dy = e.clientY - (r.top + r.height / 2);
-      btn.style.transform = `translate(${dx * 0.22}px, ${dy * 0.35}px)`;
-    });
-    btn.addEventListener("mouseleave", () => { btn.style.transform = ""; });
-  });
-}
 
 /* ----------------------------------------------------------
    HERO: products, parallax, bubbles, live ticker
@@ -304,6 +43,7 @@ function placeHero() {
   });
 }
 function heroScroll(y) { if (y < innerHeight * 1.2 && !reduceMotion) { heroY = y; placeHero(); } }
+scrollHooks.push(heroScroll);
 if (finePointer && !reduceMotion) {
   $("#hero").addEventListener("mousemove", e => {
     mx = (e.clientX / innerWidth - 0.5) * 2;
@@ -347,6 +87,7 @@ if (!reduceMotion) {
    ---------------------------------------------------------- */
 const CATALOGUE = {
   wipes: {
+    page: "products/baby-wipes/",
     title: "Baby Wipes", bg: "#D7E8FA", art: ["wipes"], pal: [PALETTES[2]],
     blurb: "Soft, strong, perfectly moist wipes from 9 machines across North & South India — in every count, lid and lotion your range needs.",
     meta: ["10 – 100+ count", "Flip-top & sticker lids", "Spunlace & plant-based"],
@@ -360,6 +101,7 @@ const CATALOGUE = {
     ]
   },
   bath: {
+    page: "products/baby-shampoo-body-wash/",
     title: "Bath & Hair", bg: "#FBD3C3", art: ["flip", "pump", "pump"], pal: [PALETTES[5], PALETTES[0], PALETTES[4]],
     blurb: "Tear-free shampoos and soap-free washes from our Pondicherry liquids campus — mild on eyes, kind to delicate scalps.",
     meta: ["Tear-free options", "Mild surfactants", "Pump · flip-cap · refills"],
@@ -373,6 +115,7 @@ const CATALOGUE = {
     ]
   },
   skin: {
+    page: "products/baby-lotion-cream-oil/",
     title: "Skin Care", bg: "#CDEFE3", art: ["flip", "jar", "tube"], pal: [PALETTES[1], PALETTES[3], PALETTES[0]],
     blurb: "Lotions, creams, oils and balms — from light everyday moisture to rich barrier care, with free-from formulations available.",
     meta: ["Lotions to rich creams", "Free-from options", "Tubes · jars · bottles"],
@@ -386,6 +129,7 @@ const CATALOGUE = {
     ]
   },
   home: {
+    page: "products/baby-laundry-detergent-cleansers/",
     title: "Laundry & Cleaning", bg: "#E4DCF8", art: ["detergent", "pump"], pal: [PALETTES[4], PALETTES[1]],
     blurb: "Baby-safe detergents and cleansers made in the same campus as your cosmetics — so your brand covers the whole nursery.",
     meta: ["Baby-gentle surfactants", "Low-residue rinse", "Bottles · cans · pouches"],
@@ -409,6 +153,7 @@ function renderCatalogue(key) {
         <h3>${c.title}</h3>
         <p>${c.blurb}</p>
         <div class="pp-meta">${c.meta.map(m => `<span>${m}</span>`).join("")}</div>
+        <a class="pp-link" href="${c.page}">Full specifications &amp; pack options <span class="arrow">→</span></a>
       </div>
       <div class="pp-art">${art}</div>
     </div>
@@ -618,6 +363,7 @@ function whyScroll() {
   $("#whyBar").style.transform = `scaleX(${p})`;
   $("#whyIdx").textContent = String(Math.min(5, Math.floor(p * 4.999) + 1)).padStart(2, "0");
 }
+scrollHooks.push(whyScroll);
 
 /* ----------------------------------------------------------
    BRAND STUDIO
@@ -789,26 +535,21 @@ renderPlan();
       products: fd.getAll("products"),
       business: fd.get("business"), volume: fd.get("volume"), launch: fd.get("launch"), formula: fd.get("formula"),
       notes: fd.get("notes"), name: fd.get("name"), company: fd.get("company"), email: fd.get("email"),
-      phone: fd.get("phone"), city: fd.get("city"), concept: fd.get("concept"), website: fd.get("website"),
-      page: location.href
+      phone: fd.get("phone"), city: fd.get("city"), concept: fd.get("concept"), website: fd.get("website")
     };
 
     submit.disabled = true;
     submit.textContent = "Sending…";
-    let sent = false;
-    try {
-      const res = await fetch(CONTACT.endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
-      sent = res.ok;
-    } catch (_) { sent = false; }
+    const sent = data.website ? true : await sendLead({ ...data, type: "enquiry" });
+    if (!data.website) rememberContact(data);
 
     if (!sent) {
       // No backend reachable (e.g. static hosting) — hand the brief to the visitor's email app.
-      const body = [
+      mailtoLead("Private label enquiry — " + data.company, [
         `Name: ${data.name}`, `Company: ${data.company}`, `Email: ${data.email}`, `Phone: ${data.phone}`, `City: ${data.city || "-"}`,
         `Business: ${data.business}`, `Products: ${data.products.join(", ")}`, `Volume: ${data.volume}`, `Launch: ${data.launch}`,
         `Formulation: ${data.formula}`, data.concept ? `Brand Studio concept: ${data.concept}` : "", `Notes: ${data.notes || "-"}`
-      ].filter(Boolean).join("\n");
-      location.href = `mailto:${CONTACT.email}?subject=${encodeURIComponent("Private label enquiry — " + data.company)}&body=${encodeURIComponent(body)}`;
+      ]);
       $("#doneMsg").textContent = "Your email app should open with your brief filled in — just press send and our private label team will reply.";
     }
     $("#formDone").hidden = false;
@@ -818,40 +559,3 @@ renderPlan();
   show(0);
 })();
 
-function confetti() {
-  if (reduceMotion) return;
-  const colors = ["#F6A88A", "#8FD3BE", "#9CC5F0", "#F7DE8C", "#C7B8F0"];
-  for (let i = 0; i < 70; i++) {
-    const c = document.createElement("span");
-    c.className = "confetti";
-    c.style.left = Math.random() * 100 + "vw";
-    c.style.background = colors[i % colors.length];
-    c.style.setProperty("--x", (Math.random() - 0.5) * 200 + "px");
-    c.style.setProperty("--r", Math.random() * 720 + "deg");
-    c.style.animationDuration = 2 + Math.random() * 2 + "s";
-    c.style.animationDelay = Math.random() * 0.4 + "s";
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 4800);
-  }
-}
-
-/* ----------------------------------------------------------
-   Contact details & misc
-   ---------------------------------------------------------- */
-(function contacts() {
-  const links = [];
-  if (CONTACT.email) links.push(`<a href="mailto:${esc(CONTACT.email)}">✉ ${esc(CONTACT.email)}</a>`);
-  if (CONTACT.phone) links.push(`<a href="tel:${esc(CONTACT.phone.replace(/\s/g, ""))}">☏ ${esc(CONTACT.phone)}</a>`);
-  if (CONTACT.whatsapp) {
-    const wa = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent("Hi Novel Tissues, I'd like to discuss private label baby care.")}`;
-    links.push(`<a href="${wa}" target="_blank" rel="noopener">💬 WhatsApp us</a>`);
-    const f = $("#waFloat");
-    f.href = wa;
-    f.hidden = false;
-  }
-  $("#directContact").innerHTML = links.join("");
-  $("#footerContact").innerHTML = links.join("");
-  $("#year").textContent = new Date().getFullYear();
-})();
-
-onScroll();

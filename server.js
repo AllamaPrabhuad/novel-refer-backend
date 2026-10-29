@@ -53,29 +53,34 @@ app.post("/proxy/enroll", (req, res) => {
 // B2B private label website
 app.use("/b2b", express.static(path.join(__dirname, "public/b2b")));
 
+// Leads from the site: type is "enquiry", "brochure" or "sample"
 app.post("/api/enquiry", async (req, res) => {
   const b = req.body || {};
   if (b.website) return res.json({ ok: true }); // honeypot
 
+  const type = ["enquiry", "brochure", "sample"].includes(b.type) ? b.type : "enquiry";
   const required = ["name", "company", "email", "phone"];
+  if (type === "sample") required.push("address", "city", "pincode");
   if (required.some(k => !String(b[k] || "").trim())) {
     return res.status(400).json({ ok: false, error: "Missing required fields" });
   }
 
-  const enquiry = {
+  const lead = {
+    type,
     received_at: new Date().toISOString(),
-    name: b.name, company: b.company, email: b.email, phone: b.phone, city: b.city,
+    name: b.name, company: b.company, email: b.email, phone: b.phone,
     business: b.business, products: b.products, volume: b.volume, launch: b.launch,
-    formula: b.formula, concept: b.concept, notes: b.notes, page: b.page
+    formula: b.formula, concept: b.concept, notes: b.notes,
+    address: b.address, city: b.city, pincode: b.pincode, page: b.page
   };
-  console.log("B2B enquiry", JSON.stringify(enquiry));
+  console.log(`B2B ${type}`, JSON.stringify(lead));
 
   if (ENQUIRY_WEBHOOK_URL) {
     try {
       await fetch(ENQUIRY_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(enquiry)
+        body: JSON.stringify(lead)
       });
     } catch (err) {
       console.error("Enquiry webhook failed", err);

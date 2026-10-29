@@ -3,5 +3,10 @@
   "type": "module",
   "dependencies": {
     "express": "^4.19.2"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "build:site": "node site/build.mjs",
+    "build:assets": "node site/make-assets.mjs"
   }
 }

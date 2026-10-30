@@ -5,13 +5,13 @@
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 const PALETTES = [
-  { name: "Blush", c1: "#F9D5C8", c2: "#E98A6B", c3: "#FFF8F3", ink: "#5A2A1E", bg: "#FBE3D8" },
-  { name: "Mint", c1: "#CFEFE3", c2: "#4FB896", c3: "#FFFFFF", ink: "#154535", bg: "#DDF4EB" },
-  { name: "Sky", c1: "#D3E6FA", c2: "#5B95D6", c3: "#FFFFFF", ink: "#15305A", bg: "#E3EEFA" },
-  { name: "Butter", c1: "#F9E7A8", c2: "#E2B43C", c3: "#FFFDF4", ink: "#4A3810", bg: "#FBF0C9" },
-  { name: "Lilac", c1: "#E2D9F8", c2: "#8E78D6", c3: "#FFFFFF", ink: "#2E2257", bg: "#ECE6FA" },
-  { name: "Leaf", c1: "#DCEBC9", c2: "#7FAF4E", c3: "#FFFFFF", ink: "#2C4214", bg: "#E7F1DC" },
-  { name: "Midnight", c1: "#22305A", c2: "#F6A88A", c3: "#FBF6EF", ink: "#14213D", bg: "#C9D3EA" }
+  { name: "Blush", c1: "#E6DCDC", c2: "#B1A6A4", c3: "#FAF9F8", ink: "#413F3D", bg: "#EDE7E7" },
+  { name: "Slate", c1: "#DADEE6", c2: "#697184", c3: "#FAF9F8", ink: "#3A3F4B", bg: "#E4E6EB" },
+  { name: "Mist", c1: "#E4E6EB", c2: "#8C94A6", c3: "#FFFFFF", ink: "#413F3D", bg: "#ECEDF0" },
+  { name: "Stone", c1: "#E9E4DF", c2: "#A39A93", c3: "#FAF9F8", ink: "#413F3D", bg: "#EFECE9" },
+  { name: "Mauve", c1: "#E1D9DB", c2: "#8E8487", c3: "#FAF9F8", ink: "#413F3D", bg: "#EAE5E6" },
+  { name: "Ash", c1: "#E0E1DE", c2: "#8F938E", c3: "#FAF9F8", ink: "#413F3D", bg: "#E9EAE8" },
+  { name: "Charcoal", c1: "#4A4846", c2: "#D8CFD0", c3: "#F2F1EF", ink: "#413F3D", bg: "#D8CFD0" }
 ];
 const PRODUCT_LABEL = { wipes: "Baby Wipes", pump: "Baby Shampoo", flip: "Baby Lotion", tube: "Baby Cream", jar: "Rash Cream", detergent: "Baby Laundry Liquid", pouch: "Refill Pack" };
 

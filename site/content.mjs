@@ -29,7 +29,7 @@ export const CATEGORIES = [
     kicker: "Baby wipes manufacturing",
     h1: "Private label baby wipes, made at <em>crore scale.</em>",
     lead: "Novel Tissues manufactures baby wet wipes for brands, retailers and distributors across India and overseas. Nine dedicated wipes machines across our North and South India plants produce more than 1.5 crore wipes every month — so you can start with a trial run and grow to national distribution without changing manufacturers.",
-    heroBg: "#D7E8FA",
+    heroBg: "#E2E4EA",
     art: [{ type: "wipes", pal: 2, size: "wide" }, { type: "wipes", pal: 0, size: "wide", count: 30 }],
     facts: ["9 wipes machines", "1.5 Cr+ wipes / month", "North & South India plants", "10 to 100+ count packs"],
     products: [
@@ -99,7 +99,7 @@ export const CATEGORIES = [
     kicker: "Bath & hair care manufacturing",
     h1: "Tear-free baby shampoo &amp; wash, <em>under your brand.</em>",
     lead: "At our Pondicherry liquids campus — one of the largest cosmetics plants in the region, with eight manufacturing lines — we formulate, fill and pack baby shampoos, head-to-toe washes, body washes, bubble baths and hair oils for private label brands.",
-    heroBg: "#FBD3C3",
+    heroBg: "#E3DCDC",
     art: [{ type: "flip", pal: 5 }, { type: "pump", pal: 0 }, { type: "pump", pal: 4 }],
     facts: ["8 liquid lines in Pondicherry", "Tear-free & sulphate-free options", "Pump, flip-cap & refill packs", "Your formula or ours"],
     products: [
@@ -168,7 +168,7 @@ export const CATEGORIES = [
     kicker: "Baby skin care manufacturing",
     h1: "Baby lotions, creams &amp; oils — <em>made for your brand.</em>",
     lead: "From light everyday lotions to rich barrier creams and massage oils, our Pondicherry campus formulates, fills and packs baby skin care for private label brands — with free-from options built around delicate baby skin.",
-    heroBg: "#CDEFE3",
+    heroBg: "#E6E1E0",
     art: [{ type: "flip", pal: 1 }, { type: "jar", pal: 3, size: "wide" }, { type: "tube", pal: 0 }],
     facts: ["Lotions to rich creams", "Free-from options", "Tubes, jars & bottles", "Made in Pondicherry"],
     products: [
@@ -235,7 +235,7 @@ export const CATEGORIES = [
     kicker: "Baby laundry & cleaning manufacturing",
     h1: "Baby laundry &amp; cleaning liquids, <em>made beside your cosmetics.</em>",
     lead: "Parents look for gentler detergents and cleansers for everything that touches their baby. We manufacture baby laundry detergents, fabric conditioners, bottle & nipple cleansers and toy & surface cleansers at our Pondicherry campus — so your brand can cover the whole nursery.",
-    heroBg: "#E4DCF8",
+    heroBg: "#E4E1E6",
     art: [{ type: "detergent", pal: 4, size: "wide" }, { type: "pouch", pal: 1 }, { type: "pump", pal: 2, label: "Bottle Cleanser" }],
     facts: ["Gentle, low-residue formulas", "Dye-free & fragrance-free options", "Bottles, cans & refills", "Same campus as your cosmetics"],
     products: [
@@ -307,7 +307,7 @@ export const POSTS = [
     category: "Brand building",
     date: PUBLISHED,
     art: { type: "pump", pal: 0 },
-    bg: "#FBD3C3",
+    bg: "#E3DCDC",
     excerpt: "From choosing your hero product to your first reorder — the practical path to launching a baby care brand without building a factory.",
     product: "baby-wipes",
     body: `
@@ -378,7 +378,7 @@ export const POSTS = [
     category: "Manufacturing basics",
     date: PUBLISHED,
     art: { type: "flip", pal: 4 },
-    bg: "#E4DCF8",
+    bg: "#E4E1E6",
     excerpt: "Three terms that get mixed up all the time. Here's what each means for your formula, your brand and your budget.",
     product: "baby-shampoo-body-wash",
     body: `
@@ -441,7 +441,7 @@ export const POSTS = [
     category: "Wipes",
     date: PUBLISHED,
     art: { type: "wipes", pal: 2, size: "wide" },
-    bg: "#D7E8FA",
+    bg: "#E2E4EA",
     excerpt: "Wipes look simple. Making them consistently, safely and at scale isn't. Ask these 12 questions before you sign.",
     product: "baby-wipes",
     body: `
@@ -492,7 +492,7 @@ export const POSTS = [
     category: "Wipes",
     date: PUBLISHED,
     art: { type: "wipes", pal: 1, size: "wide", count: 80 },
-    bg: "#CDEFE3",
+    bg: "#E6E1E0",
     excerpt: "The fabric decides how a wipe feels in a parent's hand. Here's how to choose GSM and substrate with confidence.",
     product: "baby-wipes",
     body: `
@@ -545,7 +545,7 @@ export const POSTS = [
     category: "Formulation",
     date: PUBLISHED,
     art: { type: "pump", pal: 5 },
-    bg: "#FBEFC4",
+    bg: "#EDE8E6",
     excerpt: "Tear-free isn't a single ingredient — it's a set of formulation choices plus the testing to prove it.",
     product: "baby-shampoo-body-wash",
     body: `
@@ -596,7 +596,7 @@ export const POSTS = [
     category: "Laundry",
     date: PUBLISHED,
     art: { type: "detergent", pal: 4, size: "wide" },
-    bg: "#E4DCF8",
+    bg: "#E4E1E6",
     excerpt: "Baby clothes sit on baby skin all day. Here's what makes a detergent baby-friendly — and why it's a smart addition to your range.",
     product: "baby-laundry-detergent-cleansers",
     body: `

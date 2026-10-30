@@ -435,7 +435,7 @@ const MODALS_HTML = `
 
 function confetti() {
   if (reduceMotion) return;
-  const colors = ["#F6A88A", "#8FD3BE", "#9CC5F0", "#F7DE8C", "#C7B8F0"];
+  const colors = ["#697184", "#B1A6A4", "#9AA2B3", "#D8CFD0", "#C4BBBC"];
   for (let i = 0; i < 70; i++) {
     const c = document.createElement("span");
     c.className = "confetti";

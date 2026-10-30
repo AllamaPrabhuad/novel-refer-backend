@@ -42,3 +42,18 @@ is set, forwarded there as JSON (e.g. a Zapier/Make webhook into email or Google
 1. Set `SITE.url` in `config.js` to the real domain and rebuild — canonical URLs and the sitemap use it.
 2. Serve the site at the root of that domain so `/sitemap.xml` and `/robots.txt` are at the top level.
 3. Add the domain in Google Search Console and submit `sitemap.xml`.
+
+## Hosting on Hostinger
+
+```bash
+npm run build:hostinger
+```
+
+This writes `dist/novel-tissues-hostinger.zip`: the whole site plus `api/enquiry.php` (emails every
+enquiry, brochure download and sample request to `CONTACT.email`, and keeps a CSV backup outside
+`public_html`) and an `.htaccess` (https, one main address, caching, compression).
+
+1. hPanel → Websites → your site → File Manager → open `public_html` and delete the default page.
+2. Upload the zip, right-click it → Extract into `public_html`, then delete the zip.
+3. Make sure the inbox in `CONTACT.email` exists (hPanel → Emails) and send a test sample request.
+4. In Google Search Console add the domain and submit `https://www.noveltissues.com/sitemap.xml`.

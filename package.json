@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "build:site": "node site/build.mjs",
-    "build:assets": "node site/make-assets.mjs"
+    "build:assets": "node site/make-assets.mjs",
+    "build:hostinger": "node site/build-hostinger.mjs"
   }
 }

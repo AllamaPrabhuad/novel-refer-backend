@@ -27,7 +27,7 @@ function write(rel, html) {
 }
 
 /* ---------- shared fragments ---------- */
-const FAVICON = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%2314213D'/%3E%3Cpath d='M32 12c8 11 14 18 14 26a14 14 0 0 1-28 0c0-8 6-15 14-26z' fill='%23F6A88A'/%3E%3C/svg%3E`;
+const FAVICON = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23413F3D'/%3E%3Cpath d='M32 12c8 11 14 18 14 26a14 14 0 0 1-28 0c0-8 6-15 14-26z' fill='%23697184'/%3E%3C/svg%3E`;
 
 function seoHead({ title, description, url, type = "website", image = abs("og-image.png"), jsonld = [], extra = "" }) {
   return `<title>${title}</title>
@@ -63,7 +63,7 @@ function navHTML(root, active = "") {
 <header class="nav" id="nav">
   <a href="${root || "./"}" class="brand" aria-label="Novel Tissues home">
     <span class="brand-mark">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="18" fill="#14213D"/><path d="M32 12c8 11 14 18 14 26a14 14 0 0 1-28 0c0-8 6-15 14-26z" fill="#F6A88A"/><circle cx="27" cy="38" r="4" fill="#FBF6EF" opacity=".7"/></svg>
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="18" fill="#413F3D"/><path d="M32 12c8 11 14 18 14 26a14 14 0 0 1-28 0c0-8 6-15 14-26z" fill="#697184"/><circle cx="27" cy="38" r="4" fill="#F2F1EF" opacity=".7"/></svg>
     </span>
     <span class="brand-text">Novel Tissues<small>Private Label Baby Care</small></span>
   </a>
@@ -164,7 +164,7 @@ function page({ root, rel, title, description, body, jsonld, type, active, image
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   ${seoHead({ title, description, url: abs(rel), type, jsonld, image })}
-  <meta name="theme-color" content="#FBF6EF" />
+  <meta name="theme-color" content="#F2F1EF" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -340,7 +340,7 @@ ${ctaBand(root)}`;
   const root = "../";
   const rel = "products/";
   const body = `
-<section class="page-hero" style="--hero-bg:#FBD3C3">
+<section class="page-hero" style="--hero-bg:#E3DCDC">
   <div class="blob b1"></div><div class="blob b2"></div>
   <div class="wrap">
     ${crumbs(root, [["Products"]])}
@@ -409,7 +409,7 @@ ${ctaBand(root)}`;
   const rel = "blog/";
   const sorted = [...POSTS].sort((a, b) => b.date.localeCompare(a.date));
   const body = `
-<section class="page-hero compact" style="--hero-bg:#CDEFE3">
+<section class="page-hero compact" style="--hero-bg:#E6E1E0">
   <div class="blob b1"></div><div class="blob b2"></div>
   <div class="wrap">
     ${crumbs(root, [["Blog"]])}

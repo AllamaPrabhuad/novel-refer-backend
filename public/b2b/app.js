@@ -88,7 +88,7 @@ if (!reduceMotion) {
 const CATALOGUE = {
   wipes: {
     page: "products/baby-wipes/",
-    title: "Baby Wipes", bg: "#D7E8FA", art: ["wipes"], pal: [PALETTES[2]],
+    title: "Baby Wipes", bg: "#E2E4EA", art: ["wipes"], pal: [PALETTES[2]],
     blurb: "Soft, strong, perfectly moist wipes from 9 machines across North & South India — in every count, lid and lotion your range needs.",
     meta: ["10 – 100+ count", "Flip-top & sticker lids", "Spunlace & plant-based"],
     items: [
@@ -102,7 +102,7 @@ const CATALOGUE = {
   },
   bath: {
     page: "products/baby-shampoo-body-wash/",
-    title: "Bath & Hair", bg: "#FBD3C3", art: ["flip", "pump", "pump"], pal: [PALETTES[5], PALETTES[0], PALETTES[4]],
+    title: "Bath & Hair", bg: "#E3DCDC", art: ["flip", "pump", "pump"], pal: [PALETTES[5], PALETTES[0], PALETTES[4]],
     blurb: "Tear-free shampoos and soap-free washes from our Pondicherry liquids campus — mild on eyes, kind to delicate scalps.",
     meta: ["Tear-free options", "Mild surfactants", "Pump · flip-cap · refills"],
     items: [
@@ -116,7 +116,7 @@ const CATALOGUE = {
   },
   skin: {
     page: "products/baby-lotion-cream-oil/",
-    title: "Skin Care", bg: "#CDEFE3", art: ["flip", "jar", "tube"], pal: [PALETTES[1], PALETTES[3], PALETTES[0]],
+    title: "Skin Care", bg: "#E6E1E0", art: ["flip", "jar", "tube"], pal: [PALETTES[1], PALETTES[3], PALETTES[0]],
     blurb: "Lotions, creams, oils and balms — from light everyday moisture to rich barrier care, with free-from formulations available.",
     meta: ["Lotions to rich creams", "Free-from options", "Tubes · jars · bottles"],
     items: [
@@ -130,7 +130,7 @@ const CATALOGUE = {
   },
   home: {
     page: "products/baby-laundry-detergent-cleansers/",
-    title: "Laundry & Cleaning", bg: "#E4DCF8", art: ["detergent", "pump"], pal: [PALETTES[4], PALETTES[1]],
+    title: "Laundry & Cleaning", bg: "#E4E1E6", art: ["detergent", "pump"], pal: [PALETTES[4], PALETTES[1]],
     blurb: "Baby-safe detergents and cleansers made in the same campus as your cosmetics — so your brand covers the whole nursery.",
     meta: ["Baby-gentle surfactants", "Low-residue rinse", "Bottles · cans · pouches"],
     items: [
@@ -278,17 +278,17 @@ function conveyor(el, period, draw) {
   const MOVE = 750, DWELL = 1150, T = MOVE + DWELL;
   const X0 = 140, PITCH = 170; // slot 0 = fabric leaving the roll, slots 1–5 = the five stations
   const EXIT = 7, POOL = 9, FOLLOW = 6; // every 6th pack carries the marker the steps follow
-  const WET = "#D7E8FA", BLUE = "#9CC5F0";
+  const WET = "#E2E4EA", BLUE = "#9AA2B3";
   const pack = `<rect x="-30" y="176" width="60" height="22" rx="9" fill="${BLUE}"/><rect x="-13" y="179" width="26" height="9" rx="4" fill="#fff"/>`;
   const STAGES = [
-    `<rect x="-34" y="190" width="68" height="8" rx="2" fill="#fff" stroke="#D8CFC2"/>`,                     // unwound fabric
+    `<rect x="-34" y="190" width="68" height="8" rx="2" fill="#fff" stroke="#CFC7C5"/>`,                     // unwound fabric
     `<rect x="-34" y="189" width="68" height="9" rx="2" fill="${WET}" stroke="${BLUE}"/>`,                     // lotion applied
     `<path d="M-26 195h52M-26 189.5h52M-26 184h52" stroke="${BLUE}" stroke-width="5" stroke-linecap="round"/>`, // folded
-    `<rect x="-24" y="180" width="48" height="18" rx="3" fill="#EEF5FC" stroke="${BLUE}"/><path d="M-24 186h48M-24 192h48" stroke="${BLUE}"/>`, // cut & stacked
+    `<rect x="-24" y="180" width="48" height="18" rx="3" fill="#F0F1F4" stroke="${BLUE}"/><path d="M-24 186h48M-24 192h48" stroke="${BLUE}"/>`, // cut & stacked
     pack,                                                                                                          // flow-wrapped with lid
-    pack + `<circle cx="22" cy="170" r="7" fill="#3DA88A"/><path d="M18.5 170l2.5 2.5 4.5-5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>` // inspected
+    pack + `<circle cx="22" cy="170" r="7" fill="#697184"/><path d="M18.5 170l2.5 2.5 4.5-5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>` // inspected
   ];
-  const marker = `<circle cx="0" cy="234" r="9" fill="#F6A88A" opacity=".25"/><circle cx="0" cy="234" r="5" fill="#F6A88A"/>`;
+  const marker = `<circle cx="0" cy="234" r="9" fill="#697184" opacity=".25"/><circle cx="0" cy="234" r="5" fill="#697184"/>`;
   const nodes = Array.from({ length: POOL }, () => {
     const n = document.createElementNS("http://www.w3.org/2000/svg", "g");
     $("#lineItems").appendChild(n);

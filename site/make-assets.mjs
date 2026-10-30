@@ -16,10 +16,10 @@ const { CONTACT, SITE } = new Function(fs.readFileSync(path.join(OUT, "config.js
 const domain = SITE.url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
 const FONTS = `<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />`;
-const DROP = `<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="18" fill="#14213D"/><path d="M32 12c8 11 14 18 14 26a14 14 0 0 1-28 0c0-8 6-15 14-26z" fill="#F6A88A"/><circle cx="27" cy="38" r="4" fill="#FBF6EF" opacity=".7"/></svg>`;
+const DROP = `<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="18" fill="#413F3D"/><path d="M32 12c8 11 14 18 14 26a14 14 0 0 1-28 0c0-8 6-15 14-26z" fill="#697184"/><circle cx="27" cy="38" r="4" fill="#F2F1EF" opacity=".7"/></svg>`;
 
 const BASE_CSS = `
-  :root { --cream:#FBF6EF; --cream-2:#F4ECE1; --cream-3:#EDE4D8; --ink:#14213D; --ink-2:#2A3656; --muted:#5E6784; --peach:#F6A88A; --peach-2:#FBD3C3; --mint:#8FD3BE; --mint-2:#CDEFE3; --sky:#9CC5F0; --sky-2:#D7E8FA; --lilac:#C7B8F0; --butter:#F7DE8C; }
+  :root { --cream:#F2F1EF; --cream-2:#E9E5E3; --cream-3:#D8CFD0; --ink:#413F3D; --ink-2:#5A5654; --muted:#697184; --peach:#697184; --peach-2:#E3DCDC; --mint:#B1A6A4; --mint-2:#E6E1E0; --sky:#9AA2B3; --sky-2:#E2E4EA; --lilac:#C4BBBC; --butter:#D8CFD0; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: "Plus Jakarta Sans", sans-serif; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; font-weight: 500; letter-spacing: -.02em; line-height: 1.05; }
@@ -49,17 +49,17 @@ const BROCHURE = `<!doctype html><html><head><meta charset="utf-8">${FONTS}<styl
   .dark { background: var(--ink); color: var(--cream); }
   .kick { font-size: 8.5pt; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 8px; }
   .kick::before { content: ""; width: 22px; height: 2px; background: var(--peach); }
-  .dark .kick { color: rgba(251,246,239,.7); }
+  .dark .kick { color: rgba(242, 241, 239,.7); }
   h2 { font-size: 30pt; margin-top: 8px; }
   h3 { font-size: 15pt; }
   p { font-size: 10pt; line-height: 1.6; color: var(--ink-2); }
-  .dark p { color: rgba(251,246,239,.75); }
+  .dark p { color: rgba(242, 241, 239,.75); }
   .lead { font-size: 11.5pt; margin-top: 10px; max-width: 150mm; }
   .pf { position: absolute; left: 16mm; right: 16mm; bottom: 9mm; display: flex; justify-content: space-between; font-size: 7.5pt; font-weight: 700; color: var(--muted); border-top: 1px solid var(--cream-3); padding-top: 3mm; }
-  .dark .pf { color: rgba(251,246,239,.5); border-color: rgba(255,255,255,.12); }
+  .dark .pf { color: rgba(242, 241, 239,.5); border-color: rgba(255,255,255,.12); }
   .ticks { list-style: none; display: grid; gap: 5px; margin-top: 8px; }
   .ticks li { position: relative; padding-left: 16px; font-size: 9.5pt; font-weight: 600; }
-  .ticks li::before { content: "✓"; position: absolute; left: 0; color: #3DA88A; font-weight: 800; }
+  .ticks li::before { content: "✓"; position: absolute; left: 0; color: #697184; font-weight: 800; }
   .card { background: #fff; border-radius: 14px; padding: 12px 14px; }
   .card h4 { font-size: 11.5pt; }
   .card p { font-size: 8.8pt; margin-top: 4px; line-height: 1.5; }
@@ -74,25 +74,30 @@ const BROCHURE = `<!doctype html><html><head><meta charset="utf-8">${FONTS}<styl
   .band { border-radius: 18px; padding: 10px 16px; display: flex; align-items: flex-end; gap: 0; justify-content: center; height: 38mm; overflow: hidden; }
   .band.tall .a { width: 15mm; }
   .band.tall .a-jar { width: 28mm; }
-  .band .a { width: 22mm; margin-left: -3mm; filter: drop-shadow(0 6px 8px rgba(20,33,61,.18)); }
+  .band .a { width: 22mm; margin-left: -3mm; filter: drop-shadow(0 6px 8px rgba(65, 63, 61,.18)); }
   .band .a-wipes, .band .a-jar, .band .a-detergent { width: 46mm; }
   .sec-title { display: flex; justify-content: space-between; align-items: flex-end; gap: 10mm; }
 
+  /* palette contrast: on charcoal, accents use blush grey */
+  .dark em, .stats b, .num b { color: #D8CFD0; }
+  .dark .kick::before { background: #D8CFD0; }
+  .step:nth-child(3n+2) .n { color: #fff; }
+  .next { background: #D8CFD0 !important; }
   /* cover */
   .cover { padding: 20mm 18mm; }
   .cover .brand { display: flex; align-items: center; gap: 10px; }
   .cover .brand svg { width: 13mm; }
   .cover .brand b { font-family: "Fraunces", serif; font-size: 18pt; font-weight: 600; }
-  .cover .brand small { display: block; font-size: 7pt; letter-spacing: .16em; text-transform: uppercase; color: rgba(251,246,239,.6); font-weight: 800; }
+  .cover .brand small { display: block; font-size: 7pt; letter-spacing: .16em; text-transform: uppercase; color: rgba(242, 241, 239,.6); font-weight: 800; }
   .cover h1 { font-size: 46pt; line-height: .98; margin-top: 30mm; letter-spacing: -.035em; }
-  .cover .sub { font-size: 12pt; color: rgba(251,246,239,.75); margin-top: 8mm; max-width: 140mm; line-height: 1.55; }
-  .cover .glow { position: absolute; width: 160mm; height: 160mm; border-radius: 50%; right: -50mm; bottom: 10mm; background: radial-gradient(circle, rgba(246,168,138,.35), transparent 65%); }
+  .cover .sub { font-size: 12pt; color: rgba(242, 241, 239,.75); margin-top: 8mm; max-width: 140mm; line-height: 1.55; }
+  .cover .glow { position: absolute; width: 160mm; height: 160mm; border-radius: 50%; right: -50mm; bottom: 10mm; background: radial-gradient(circle, rgba(105, 113, 132,.35), transparent 65%); }
   .cover .stage { position: absolute; left: 14mm; right: 14mm; bottom: 46mm; display: flex; align-items: flex-end; justify-content: center; }
   .cover .stage .a { width: 26mm; margin-left: -4mm; filter: drop-shadow(0 10px 14px rgba(0,0,0,.35)); }
   .cover .stage .a-wipes { width: 62mm; } .cover .stage .a-jar { width: 40mm; } .cover .stage .a-detergent { width: 40mm; }
   .stats { position: absolute; left: 18mm; right: 18mm; bottom: 16mm; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6mm; border-top: 1px solid rgba(255,255,255,.15); padding-top: 6mm; }
   .stats b { display: block; font-family: "Fraunces", serif; font-size: 22pt; font-weight: 500; color: var(--peach); }
-  .stats span { font-size: 8pt; font-weight: 700; color: rgba(251,246,239,.7); }
+  .stats span { font-size: 8pt; font-weight: 700; color: rgba(242, 241, 239,.7); }
 
   /* about */
   .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 9mm; }
@@ -100,7 +105,7 @@ const BROCHURE = `<!doctype html><html><head><meta charset="utf-8">${FONTS}<styl
   .num b { font-family: "Fraunces", serif; font-size: 26pt; font-weight: 500; color: var(--peach); line-height: 1; }
   .num b small { font-family: "Plus Jakarta Sans"; font-size: 9pt; color: var(--cream); font-weight: 700; margin-left: 4px; }
   .num h4 { font-size: 11pt; margin-top: 6px; }
-  .num p { font-size: 8.3pt; color: rgba(251,246,239,.65); margin-top: 3px; line-height: 1.45; }
+  .num p { font-size: 8.3pt; color: rgba(242, 241, 239,.65); margin-top: 3px; line-height: 1.45; }
   .units { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 7mm; }
   .unit { border-radius: 16px; padding: 14px; }
   .unit .tag { font-size: 7pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
@@ -249,7 +254,7 @@ const BROCHURE = `<!doctype html><html><head><meta charset="utf-8">${FONTS}<styl
     <div><h4>Export &amp; distributors</h4><p>Private label for overseas markets, close to southern ports.</p></div>
   </div>
   <div class="next">
-    <h2>Let's build your <em style="color:#B4532F">baby-care range.</em></h2>
+    <h2>Let's build your <em style="color:#697184">baby-care range.</em></h2>
     <p>Send us your product list, target price and expected volumes. We'll come back with options, samples and a plan.</p>
     <div class="contact">${contactLines.map(l => `<span>${l}</span>`).join("")}</div>
   </div>
@@ -258,19 +263,20 @@ const BROCHURE = `<!doctype html><html><head><meta charset="utf-8">${FONTS}<styl
 </body></html>`;
 
 const OG = `<!doctype html><html><head><meta charset="utf-8">${FONTS}<style>${BASE_CSS}
-  body { width: 1200px; height: 630px; background: #14213D; color: #FBF6EF; position: relative; overflow: hidden; }
-  .glow { position: absolute; width: 760px; height: 760px; border-radius: 50%; right: -200px; top: -120px; background: radial-gradient(circle, rgba(246,168,138,.35), transparent 65%); }
+  body { width: 1200px; height: 630px; background: #413F3D; color: #F2F1EF; position: relative; overflow: hidden; }
+  .glow { position: absolute; width: 760px; height: 760px; border-radius: 50%; right: -200px; top: -120px; background: radial-gradient(circle, rgba(105, 113, 132,.35), transparent 65%); }
   .copy { position: absolute; left: 70px; top: 64px; width: 600px; }
   .brand { display: flex; align-items: center; gap: 14px; font-family: "Fraunces"; font-size: 30px; font-weight: 600; }
   .brand svg { width: 52px; }
   h1 { font-size: 66px; line-height: 1; margin-top: 54px; letter-spacing: -.035em; }
-  p { margin-top: 26px; font-size: 22px; color: rgba(251,246,239,.75); line-height: 1.45; }
+  p { margin-top: 26px; font-size: 22px; color: rgba(242, 241, 239,.75); line-height: 1.45; }
   .stage { position: absolute; right: 40px; bottom: 70px; width: 500px; display: flex; align-items: flex-end; justify-content: center; }
   .stage .a { width: 92px; margin-left: -14px; filter: drop-shadow(0 18px 20px rgba(0,0,0,.35)); }
   .stage .a-wipes { width: 230px; } .stage .a-jar { width: 140px; }
   .stats { position: absolute; left: 70px; bottom: 54px; display: flex; gap: 40px; }
-  .stats b { display: block; font-family: "Fraunces"; font-size: 34px; color: #F6A88A; font-weight: 500; }
-  .stats span { font-size: 15px; font-weight: 700; color: rgba(251,246,239,.7); }
+  .stats b { display: block; font-family: "Fraunces"; font-size: 34px; color: #D8CFD0; font-weight: 500; }
+  em { color: #D8CFD0; }
+  .stats span { font-size: 15px; font-weight: 700; color: rgba(242, 241, 239,.7); }
 </style></head><body>
   <div class="glow"></div>
   <div class="copy">

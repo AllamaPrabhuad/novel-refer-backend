@@ -11,6 +11,6 @@ const CONTACT = {
 };
 
 const SITE = {
-  url: "https://www.noveltissues.com", // live domain, used for canonical URLs & sitemap
+  url: "https://babywipesmanufacturer.com", // live domain, used for canonical URLs & sitemap
   brochure: "downloads/novel-tissues-private-label-brochure.pdf"
 };

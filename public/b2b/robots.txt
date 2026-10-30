@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://www.noveltissues.com/sitemap.xml
+Sitemap: https://babywipesmanufacturer.com/sitemap.xml

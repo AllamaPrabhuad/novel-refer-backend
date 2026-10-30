@@ -56,7 +56,7 @@ enquiry, brochure download and sample request to `CONTACT.email`, and keeps a CS
 1. hPanel → Websites → your site → File Manager → open `public_html` and delete the default page.
 2. Upload the zip, right-click it → Extract into `public_html`, then delete the zip.
 3. Make sure the inbox in `CONTACT.email` exists (hPanel → Emails) and send a test sample request.
-4. In Google Search Console add the domain and submit `https://www.noveltissues.com/sitemap.xml`.
+4. In Google Search Console add the domain and submit `<your domain>/sitemap.xml`.
 
 ### Automatic deploys from GitHub
 

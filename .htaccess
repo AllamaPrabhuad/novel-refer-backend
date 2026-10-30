@@ -6,9 +6,9 @@ RewriteEngine On
 # Always use HTTPS
 RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-# One main address (www.noveltissues.com) so Google sees a single version of every page
-RewriteCond %{HTTP_HOST} ^noveltissues\.com$ [NC]
-RewriteRule ^ https://www.noveltissues.com%{REQUEST_URI} [L,R=301]
+# One main address (babywipesmanufacturer.com) so Google sees a single version of every page
+RewriteCond %{HTTP_HOST} ^www\.babywipesmanufacturer\.com$ [NC]
+RewriteRule ^ https://babywipesmanufacturer.com%{REQUEST_URI} [L,R=301]
 
 <IfModule mod_expires.c>
   ExpiresActive On

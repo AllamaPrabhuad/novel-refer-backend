@@ -210,8 +210,6 @@ function renderWipes(changed) {
   const feel = wipe.gsm < 45 ? "Light & economical" : wipe.gsm <= 55 ? "Soft everyday strength" : "Thick, premium plush";
   const format = n <= 20 ? "Pocket flow-wrap, sticker lid" : n <= 30 ? "Travel pack, re-sealable sticker" : "Flow-wrap with flip-top lid";
   const best = { "99% purified water": "Newborns & everyday", "Aloe vera": "Daily diaper changes", "Chamomile": "Calming night-time care", "Fragrance-free sensitive": "Sensitive & allergy-prone skin" }[wipe.lotion];
-  const packs = CAPACITY_PER_MONTH / n;
-  const packsTxt = packs >= 100000 ? (packs / 100000).toFixed(2) + " lakh" : inr(packs);
   const rows = [
     ["sub", "Substrate", wipe.sub],
     ["gsm", "Fabric weight", `${wipe.gsm} GSM · ${feel}`],
@@ -219,7 +217,6 @@ function renderWipes(changed) {
     ["count", "Wipes per pack", `${n} wipes`],
     ["count", "Pack format", format],
     ["lotion", "Best for", best],
-    ["count", "Our capacity in this pack", `≈ ${packsTxt} packs / month`],
     ["sub", "Made at", "North & South India plants"]
   ];
   $("#specSheet").innerHTML = rows.map(([k, label, v]) =>
@@ -282,43 +279,38 @@ $("#wipeStage").addEventListener("keydown", e => { if (e.key === "Enter" || e.ke
    LIQUIDS: 8 animated filling lanes
    ---------------------------------------------------------- */
 const LANES = [
-  ["Shampoos & washes", "Tear-free, soap-free", "#F6A88A"],
-  ["Lotions", "Light emulsions", "#FBD3C3"],
-  ["Creams", "Rich & barrier creams", "#F7DE8C"],
-  ["Oils", "Massage & hair oils", "#E2B43C"],
-  ["Gels & bubble bath", "Clear & foaming", "#9CC5F0"],
-  ["Laundry detergent", "Baby-gentle liquids", "#C7B8F0"],
-  ["Cleansers", "Bottle, toy & surface", "#8FD3BE"],
-  ["Tubes & ointments", "Rash & balm care", "#FFFFFF"]
+  // [line name, sub, product mock-up, palette, label on pack]
+  ["Shampoos & washes", "Tear-free, soap-free", "pump", 0, "Baby Shampoo"],
+  ["Lotions", "Light emulsions", "flip", 1, "Baby Lotion"],
+  ["Creams", "Rich & barrier creams", "jar", 3, "Baby Cream"],
+  ["Oils", "Massage & hair oils", "flip", 3, "Massage Oil"],
+  ["Gels & bubble bath", "Clear & foaming", "pump", 4, "Bubble Bath"],
+  ["Laundry detergent", "Baby-gentle liquids", "detergent", 4, "Baby Laundry Liquid"],
+  ["Cleansers", "Bottle, toy & surface", "pump", 2, "Bottle Cleanser"],
+  ["Tubes & ointments", "Rash & balm care", "tube", 0, "Rash Cream"]
 ];
-function bottleSVG(color) {
-  return `<svg viewBox="0 0 24 40"><rect x="8" y="0" width="8" height="6" rx="1.5" fill="#FBF6EF" opacity=".85"/>
-    <rect x="2" y="6" width="20" height="34" rx="6" fill="none" stroke="#FBF6EF" stroke-opacity=".6" stroke-width="1.5"/>
-    <rect class="liq" x="3.5" y="12" width="17" height="26.5" rx="4.5" fill="${color}"/></svg>`;
-}
+const WIDE = ["jar", "detergent", "wipes"];
 (function lanes() {
   const wrap = $("#lanes");
-  wrap.innerHTML = LANES.map(([name, sub, c], i) => {
-    const dur = 7 + (i % 4) * 1.3;
-    const bottles = Array.from({ length: 6 }, (_, k) =>
-      `<span class="lb" style="animation-duration:${dur}s; animation-delay:${-(dur / 6) * k - i * 0.4}s">${bottleSVG(c)}</span>`).join("");
-    return `<div class="lane reveal" style="--c:${c}">
+  const perLane = innerWidth < 720 ? 3 : 5;
+  wrap.innerHTML = LANES.map(([name, sub, type, pal, label], i) => {
+    const dur = 8 + (i % 4) * 1.3;
+    const opts = { ...PALETTES[pal], label };
+    const items = Array.from({ length: perLane }, (_, k) => {
+      const timing = `animation-duration:${dur}s; animation-delay:${-(dur / perLane) * k - i * 0.4}s`;
+      return `<span class="lb${WIDE.includes(type) ? " wide" : ""}" style="${timing}">
+        <span class="ghost">${productSVG(type, opts)}</span><span class="full" style="${timing}">${productSVG(type, opts)}</span></span>`;
+    }).join("");
+    return `<div class="lane reveal" style="--c:${PALETTES[pal].c2}">
       <div class="lane-id"><small>Line</small>${String(i + 1).padStart(2, "0")}</div>
-      <div class="lane-track"><span class="nozzle" style="--c:${c}"></span>${bottles}</div>
+      <div class="lane-track"><span class="nozzle"></span>${items}</div>
       <div class="lane-name">${name}<small>${sub}</small></div>
     </div>`;
   }).join("");
   $$(".lane", wrap).forEach((el, i) => { el.style.setProperty("--d", Math.min(i, 6)); io.observe(el); });
-  const setW = () => $$(".lane-track", wrap).forEach(t => t.style.setProperty("--w", t.offsetWidth + 60 + "px"));
+  const setW = () => $$(".lane-track", wrap).forEach(t => t.style.setProperty("--w", t.offsetWidth + 90 + "px"));
   setW();
   window.addEventListener("resize", setW);
-  // liquid fill should track each bottle's own travel, so sync durations/delays
-  $$(".lb", wrap).forEach(lb => {
-    const liq = $(".liq", lb);
-    liq.style.animationDuration = lb.style.animationDuration;
-    liq.style.animationDelay = lb.style.animationDelay;
-  });
-  $$(".nozzle", wrap).forEach(n => { n.style.left = "34%"; });
 })();
 
 /* ----------------------------------------------------------
@@ -364,74 +356,6 @@ function whyScroll() {
   $("#whyIdx").textContent = String(Math.min(5, Math.floor(p * 4.999) + 1)).padStart(2, "0");
 }
 scrollHooks.push(whyScroll);
-
-/* ----------------------------------------------------------
-   BRAND STUDIO
-   ---------------------------------------------------------- */
-const studio = { brand: "Little Bloom", tag: "gentle from day one", product: "wipes", pal: 0 };
-$("#swatches").innerHTML = PALETTES.map((p, i) =>
-  `<button class="swatch${i === 0 ? " on" : ""}" data-i="${i}" aria-label="${p.name} palette" title="${p.name}"><span style="background:${p.c1}"></span><span style="background:${p.c2}"></span></button>`).join("");
-
-function renderStudio(swap) {
-  const pal = PALETTES[studio.pal];
-  const opts = { ...pal, brand: studio.brand || "Your Brand", tag: studio.tag };
-  const view = $("#studioProductView");
-  view.innerHTML = productSVG(studio.product, opts);
-  view.classList.toggle("tall", ["pump", "flip", "tube"].includes(studio.product));
-  if (swap) { view.classList.remove("swap"); void view.offsetWidth; view.classList.add("swap"); }
-  $("#studioBg").style.background = `linear-gradient(160deg, ${pal.bg}, #FFFFFF)`;
-  const others = Object.keys(PRODUCT_LABEL).filter(t => t !== studio.product);
-  $("#studioFamily").innerHTML = others.map(t =>
-    `<div class="${["wipes", "jar", "detergent"].includes(t) ? "wide" : ""}" data-t="${t}" title="${PRODUCT_LABEL[t]}">${productSVG(t, { ...opts, tag: "" })}</div>`).join("");
-}
-function setStudioProduct(t) {
-  studio.product = t;
-  $$("#studioProduct button").forEach(b => b.classList.toggle("on", b.dataset.v === t));
-  renderStudio(true);
-}
-$("#studioProduct").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setStudioProduct(b.dataset.v); });
-$("#studioFamily").addEventListener("click", e => { const d = e.target.closest("[data-t]"); if (d) setStudioProduct(d.dataset.t); });
-$("#swatches").addEventListener("click", e => {
-  const b = e.target.closest(".swatch");
-  if (!b) return;
-  $$(".swatch").forEach(s => s.classList.remove("on"));
-  b.classList.add("on");
-  studio.pal = +b.dataset.i;
-  renderStudio(true);
-});
-$("#brandName").addEventListener("input", e => { studio.brand = e.target.value.trim(); renderStudio(); });
-$("#brandTag").addEventListener("input", e => { studio.tag = e.target.value.trim(); renderStudio(); });
-renderStudio();
-
-$("#downloadSvg").addEventListener("click", () => {
-  const svg = $("#studioProductView svg");
-  if (!svg) return;
-  const blob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `${(studio.brand || "brand").replace(/[^\w-]+/g, "-").toLowerCase()}-${studio.product}-mockup.svg`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-});
-
-const CHIP_FOR = { wipes: "Baby wipes", pump: "Baby shampoo / wash", flip: "Baby lotion", tube: "Baby cream", jar: "Rash cream", detergent: "Baby laundry detergent" };
-$("#useConcept").addEventListener("click", () => {
-  const pal = PALETTES[studio.pal];
-  const concept = `${studio.brand || "Your Brand"} — ${PRODUCT_LABEL[studio.product]} — ${pal.name} palette${studio.tag ? ` — "${studio.tag}"` : ""}`;
-  $("#fConcept").value = concept;
-  const pill = $("#conceptPill");
-  pill.hidden = false;
-  pill.innerHTML = `<span>✦ Brand Studio concept: ${esc(concept)}</span><button type="button" aria-label="Remove concept">✕</button>`;
-  const chip = $(`#productChips input[value="${CHIP_FOR[studio.product]}"]`);
-  if (chip) chip.checked = true;
-  if (studio.brand && !$("#fCompany").value) $("#fCompany").value = studio.brand;
-  $("#contact").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
-});
-$("#conceptPill").addEventListener("click", e => {
-  if (e.target.closest("button")) { $("#fConcept").value = ""; $("#conceptPill").hidden = true; }
-});
 
 /* ----------------------------------------------------------
    CAPACITY PLANNER
@@ -535,7 +459,7 @@ renderPlan();
       products: fd.getAll("products"),
       business: fd.get("business"), volume: fd.get("volume"), launch: fd.get("launch"), formula: fd.get("formula"),
       notes: fd.get("notes"), name: fd.get("name"), company: fd.get("company"), email: fd.get("email"),
-      phone: fd.get("phone"), city: fd.get("city"), concept: fd.get("concept"), website: fd.get("website")
+      phone: fd.get("phone"), city: fd.get("city"), website: fd.get("website")
     };
 
     submit.disabled = true;
@@ -548,7 +472,7 @@ renderPlan();
       mailtoLead("Private label enquiry — " + data.company, [
         `Name: ${data.name}`, `Company: ${data.company}`, `Email: ${data.email}`, `Phone: ${data.phone}`, `City: ${data.city || "-"}`,
         `Business: ${data.business}`, `Products: ${data.products.join(", ")}`, `Volume: ${data.volume}`, `Launch: ${data.launch}`,
-        `Formulation: ${data.formula}`, data.concept ? `Brand Studio concept: ${data.concept}` : "", `Notes: ${data.notes || "-"}`
+        `Formulation: ${data.formula}`, `Notes: ${data.notes || "-"}`
       ]);
       $("#doneMsg").textContent = "Your email app should open with your brief filled in — just press send and our private label team will reply.";
     }

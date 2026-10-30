@@ -55,7 +55,6 @@ function navHTML(root, active = "") {
     ["Products", "products/", "products"],
     ["Wipes Lab", "#wipes"],
     ["Plants", "#plants"],
-    ["Brand Studio", "#builder"],
     ["Blog", "blog/", "blog"],
     ["FAQ", "#faq"]
   ];
@@ -87,7 +86,7 @@ function footerHTML(root) {
       </div>
       <div class="footer-cols">
         <div><h5>Products</h5>${CATEGORIES.map(c => `<a href="${root}products/${c.slug}/">${c.nav}</a>`).join("")}<a href="${root}products/">All products</a></div>
-        <div><h5>Explore</h5><a href="${root}#plants">Our plants</a><a href="${root}#builder">Brand Studio</a><a href="${root}#planner">Capacity planner</a><a href="${root}#process">Process</a><a href="${root}blog/">Blog</a></div>
+        <div><h5>Explore</h5><a href="${root}#plants">Our plants</a><a href="${root}#planner">Capacity planner</a><a href="${root}#process">Process</a><a href="${root}blog/">Blog</a></div>
         <div><h5>Talk to us</h5><a href="${root}#contact">Request a quote</a><a href="#sample" data-open="sample">Request samples</a><a href="#brochure" data-open="brochure">Download brochure</a><span data-contact-links></span></div>
       </div>
     </div>

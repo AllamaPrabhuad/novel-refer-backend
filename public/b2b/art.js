@@ -1,6 +1,6 @@
 /* ==========================================================
-   Product artwork (SVG) — reused by every page, the Brand Studio
-   and the brochure so any pack can carry any brand name.
+   Product artwork (SVG) — reused by every page and the brochure
+   so any pack can carry any brand name.
    ========================================================== */
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 

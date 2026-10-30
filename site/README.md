@@ -8,7 +8,7 @@ The site lives in `public/b2b/` and is served by `server.js` at `/b2b`.
 | `public/b2b/index.html` | Home page (hand-written; parts between `<!--NAME-->` markers are generated) |
 | `public/b2b/art.js` | Product pack drawings used everywhere |
 | `public/b2b/common.js` | Shared navigation, animations, brochure & sample pop-ups |
-| `public/b2b/app.js` | Home page interactions (Wipes Lab, Brand Studio, planner…) |
+| `public/b2b/app.js` | Home page interactions (Wipes Lab, liquids lines, planner…) |
 | `site/content.mjs` | Copy for product pages, blog posts and home FAQ |
 | `site/build.mjs` | Generates product pages, blog, sitemap, robots.txt, SEO tags |
 | `site/make-assets.mjs` | Renders the brochure PDF, share image and logo |

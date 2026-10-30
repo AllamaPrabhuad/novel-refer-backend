@@ -358,23 +358,23 @@ input[type="range"]:focus-visible { box-shadow: 0 0 0 4px rgba(246, 168, 138, .4
 .line-wrap { margin-top: 140px; }
 .line { background: var(--white); border-radius: var(--radius); padding: 30px 30px 26px; box-shadow: var(--shadow); }
 .line-svg { width: 100%; height: auto; }
-.roll { transform-origin: 70px 150px; animation: spin 6s linear infinite; }
 .station { transition: opacity .4s; }
 .station rect:first-child { transition: filter .4s; }
-.st1 .drops circle { animation: drop 1s ease-in infinite; }
-.st1 .drops circle:nth-child(2) { animation-delay: .3s; }
-.st1 .drops circle:nth-child(3) { animation-delay: .6s; }
-@keyframes drop { 0% { transform: translateY(-14px); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(8px); opacity: 0; } }
-.st2 .fold { animation: zig 1s ease-in-out infinite alternate; transform-origin: 480px 160px; }
-@keyframes zig { to { transform: scaleY(.4); } }
-.st3 .blade { animation: chop .8s ease-in-out infinite; }
-@keyframes chop { 50% { transform: translateY(16px); } }
-.st4 .press { animation: press 1.2s ease-in-out infinite; }
-@keyframes press { 50% { transform: translateY(24px); } }
-.st5 .scan { animation: blink 1s steps(2) infinite; }
+/* stations act once per beat, when app.js adds .act */
+.line-svg .drops circle { opacity: 0; }
+.line-svg.act .st1 .drops circle { animation: drop .5s ease-in both; }
+.line-svg.act .st1 .drops circle:nth-child(2) { animation-delay: .15s; }
+.line-svg.act .st1 .drops circle:nth-child(3) { animation-delay: .3s; }
+@keyframes drop { 0% { transform: translateY(-14px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(10px); opacity: 0; } }
+.st2 .fold { transform-origin: 480px 160px; }
+.line-svg.act .st2 .fold { animation: zig .9s ease-in-out both; }
+@keyframes zig { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.35); } }
+.line-svg.act .st3 .blade { animation: chop .6s .15s ease-in-out both; }
+@keyframes chop { 0%, 100% { transform: none; } 50% { transform: translateY(16px); } }
+.line-svg.act .st4 .press { animation: press .9s ease-in-out both; }
+@keyframes press { 0%, 100% { transform: none; } 45%, 60% { transform: translateY(14px); } }
+.line-svg.act .st5 .scan { animation: blink .45s steps(2) 2; }
 @keyframes blink { 50% { opacity: .2; } }
-.line-item { animation: travel 9s linear infinite; }
-@keyframes travel { from { transform: translateX(0); } to { transform: translateX(980px); } }
 .line-steps { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
 .line-steps li { padding: 14px; border-radius: 16px; background: var(--cream); transition: background .4s, transform .4s var(--ease); }
 .line-steps li b { font-family: var(--serif); color: var(--peach); font-size: 1.1rem; }
@@ -394,16 +394,15 @@ input[type="range"]:focus-visible { box-shadow: 0 0 0 4px rgba(246, 168, 138, .4
 .lane-id { font-family: var(--serif); font-size: 1.05rem; color: var(--peach); }
 .lane-id small { display: block; font-family: var(--sans); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(251, 246, 239, .5); font-weight: 700; }
 .lane-track { position: relative; height: 92px; overflow: hidden; border-bottom: 3px solid rgba(255, 255, 255, .15); }
-.lane-track .lb { position: absolute; bottom: 0; left: -80px; width: 34px; animation: laneMove linear infinite; }
+.lane-track .lb { position: absolute; bottom: 0; left: 0; width: 34px; transform: translateX(-100px); will-change: transform; }
 .lane-track .lb.wide { width: 64px; }
 .lb .ghost, .lb .full { display: block; }
 .lb .ghost svg { opacity: .22; filter: grayscale(1) brightness(1.8); }
-.lb .full { position: absolute; inset: 0; clip-path: inset(100% 0 0 0); animation: liqFill linear infinite; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .3)); }
-@keyframes laneMove { from { transform: translateX(0); } to { transform: translateX(var(--w, 900px)); } }
-@keyframes liqFill { 0%, 30% { clip-path: inset(100% 0 0 0); } 50%, 100% { clip-path: inset(0 0 0 0); } }
+.lb .full { position: absolute; inset: 0; clip-path: inset(100% 0 0 0); filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .3)); }
 .lane-track .nozzle { position: absolute; top: 0; left: 34%; width: 14px; height: 18px; background: rgba(255, 255, 255, .3); border-radius: 0 0 4px 4px; }
-.lane-track .nozzle::after { content: ""; position: absolute; left: 5px; top: 18px; width: 4px; height: 14px; border-radius: 2px; background: var(--c); animation: stream 1s ease-in-out infinite; }
-@keyframes stream { 0%, 100% { opacity: .2; transform: scaleY(.3); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+.lane-track .nozzle { z-index: 2; }
+.lane-track .nozzle::after { content: ""; position: absolute; left: 5px; top: 18px; width: 4px; height: 8px; border-radius: 2px; background: var(--c); opacity: 0; transform: scaleY(0); transform-origin: top; transition: opacity .15s, transform .2s; }
+.lane-track.pour .nozzle::after { opacity: 1; transform: scaleY(1); }
 .lane-name { font-weight: 700; font-size: .92rem; text-align: right; }
 .lane-name small { display: block; font-weight: 500; color: rgba(251, 246, 239, .55); font-size: .75rem; }
 .liquid-feats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 60px; }

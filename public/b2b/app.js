@@ -252,31 +252,87 @@ function pullWipe() {
 $("#wipeStage").addEventListener("click", pullWipe);
 $("#wipeStage").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pullWipe(); } });
 
-/* production line */
-(function line() {
-  const g = $("#lineItems");
-  const N = 9;
-  let html = "";
-  for (let i = 0; i < N; i++) {
-    html += `<g class="line-item" style="animation-delay:${-(9 / N) * i}s">
-      <rect x="196" y="176" width="44" height="22" rx="6" fill="#FFFFFF" stroke="#D8CFC2" stroke-width="1.5"/>
-      <rect x="204" y="182" width="28" height="4" rx="2" fill="#9CC5F0"/>
-      <rect x="204" y="189" width="18" height="4" rx="2" fill="#F6A88A"/></g>`;
-  }
-  g.innerHTML = html;
+/* ----------------------------------------------------------
+   Conveyor clock shared by the wipes line and the liquid lines.
+   Every beat, packs move one station forward (MOVE ms), stop,
+   and each station works on the pack beneath it (DWELL ms).
+   ---------------------------------------------------------- */
+const easeInOut = x => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+function conveyor(el, period, draw) {
+  if (reduceMotion) { draw(period * 4 - 1); return; } // one still, finished frame
+  let visible = false, t0 = null;
+  new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }).observe(el);
+  const tick = now => {
+    if (t0 === null) t0 = now;
+    if (visible) draw(now - t0);
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
 
+/* wipes production line */
+(function line() {
+  const svg = $("#prodLine .line-svg");
+  const roll = $(".roll", svg);
   const steps = $$("#lineSteps li");
-  let idx = 0, paused = false;
-  const show = i => steps.forEach((s, j) => s.classList.toggle("on", j === i));
-  setInterval(() => { if (!paused) { idx = (idx + 1) % steps.length; show(idx); } }, 1700);
-  steps.forEach((s, i) => {
-    s.addEventListener("mouseenter", () => { paused = true; idx = i; show(i); });
-    s.addEventListener("mouseleave", () => { paused = false; });
+  const MOVE = 750, DWELL = 1150, T = MOVE + DWELL;
+  const X0 = 140, PITCH = 170; // slot 0 = fabric leaving the roll, slots 1–5 = the five stations
+  const EXIT = 7, POOL = 9, FOLLOW = 6; // every 6th pack carries the marker the steps follow
+  const WET = "#D7E8FA", BLUE = "#9CC5F0";
+  const pack = `<rect x="-30" y="176" width="60" height="22" rx="9" fill="${BLUE}"/><rect x="-13" y="179" width="26" height="9" rx="4" fill="#fff"/>`;
+  const STAGES = [
+    `<rect x="-34" y="190" width="68" height="8" rx="2" fill="#fff" stroke="#D8CFC2"/>`,                     // unwound fabric
+    `<rect x="-34" y="189" width="68" height="9" rx="2" fill="${WET}" stroke="${BLUE}"/>`,                     // lotion applied
+    `<path d="M-26 195h52M-26 189.5h52M-26 184h52" stroke="${BLUE}" stroke-width="5" stroke-linecap="round"/>`, // folded
+    `<rect x="-24" y="180" width="48" height="18" rx="3" fill="#EEF5FC" stroke="${BLUE}"/><path d="M-24 186h48M-24 192h48" stroke="${BLUE}"/>`, // cut & stacked
+    pack,                                                                                                          // flow-wrapped with lid
+    pack + `<circle cx="22" cy="170" r="7" fill="#3DA88A"/><path d="M18.5 170l2.5 2.5 4.5-5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>` // inspected
+  ];
+  const marker = `<circle cx="0" cy="234" r="9" fill="#F6A88A" opacity=".25"/><circle cx="0" cy="234" r="5" fill="#F6A88A"/>`;
+  const nodes = Array.from({ length: POOL }, () => {
+    const n = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    $("#lineItems").appendChild(n);
+    return n;
+  });
+  let acted = -1, shownStep = -1;
+
+  conveyor(svg, T, ms => {
+    const cycle = Math.floor(ms / T), t = ms % T;
+    const moving = t < MOVE;
+    const e = moving ? easeInOut(t / MOVE) : 1;
+    const worked = !moving && t - MOVE > DWELL * 0.45; // station has finished its action
+
+    if (!moving && acted !== cycle) { // all stations act together, once per beat
+      acted = cycle;
+      svg.classList.remove("act");
+      svg.getBoundingClientRect();
+      svg.classList.add("act");
+    }
+    roll.setAttribute("transform", `rotate(${(cycle + e) * 45} 70 150)`);
+
+    nodes.forEach(n => n.setAttribute("opacity", 0));
+    for (let id = cycle - EXIT; id <= cycle; id++) {
+      const slot = cycle - id;
+      const n = nodes[((id % POOL) + POOL) % POOL];
+      const stage = Math.max(0, Math.min(5, worked ? slot : slot - 1));
+      const key = stage + (id % FOLLOW === 0 ? "f" : "");
+      if (n.dataset.key !== key) { n.dataset.key = key; n.innerHTML = STAGES[stage] + (id % FOLLOW === 0 ? marker : ""); }
+      n.setAttribute("transform", `translate(${X0 + (slot - 1 + e) * PITCH} 0)`);
+      n.setAttribute("opacity", slot === 0 ? e : slot === EXIT ? 1 - e : 1);
+    }
+
+    const followed = cycle - (((cycle % FOLLOW) + FOLLOW) % FOLLOW);
+    const step = Math.min(5, cycle - followed);
+    if (step !== shownStep) {
+      shownStep = step;
+      steps.forEach((li, j) => li.classList.toggle("on", j === step));
+    }
   });
 })();
 
 /* ----------------------------------------------------------
-   LIQUIDS: 8 animated filling lanes
+   LIQUIDS: 8 filling lines — each pack stops under the nozzle,
+   the nozzle pours and the pack fills, then the line moves on.
    ---------------------------------------------------------- */
 const LANES = [
   // [line name, sub, product mock-up, palette, label on pack]
@@ -292,15 +348,14 @@ const LANES = [
 const WIDE = ["jar", "detergent", "wipes"];
 (function lanes() {
   const wrap = $("#lanes");
-  const perLane = innerWidth < 720 ? 3 : 5;
+  const MOVE = 650, DWELL = 1050, T = MOVE + DWELL;
+  const SLOTS = innerWidth < 720 ? 3 : 5; // packs visible on each line
+  const FILL_SLOT = 1;                     // the slot under the nozzle
+  const POOL = SLOTS + 1;
   wrap.innerHTML = LANES.map(([name, sub, type, pal, label], i) => {
-    const dur = 8 + (i % 4) * 1.3;
     const opts = { ...PALETTES[pal], label };
-    const items = Array.from({ length: perLane }, (_, k) => {
-      const timing = `animation-duration:${dur}s; animation-delay:${-(dur / perLane) * k - i * 0.4}s`;
-      return `<span class="lb${WIDE.includes(type) ? " wide" : ""}" style="${timing}">
-        <span class="ghost">${productSVG(type, opts)}</span><span class="full" style="${timing}">${productSVG(type, opts)}</span></span>`;
-    }).join("");
+    const items = Array.from({ length: POOL }, () =>
+      `<span class="lb${WIDE.includes(type) ? " wide" : ""}"><span class="ghost">${productSVG(type, opts)}</span><span class="full">${productSVG(type, opts)}</span></span>`).join("");
     return `<div class="lane reveal" style="--c:${PALETTES[pal].c2}">
       <div class="lane-id"><small>Line</small>${String(i + 1).padStart(2, "0")}</div>
       <div class="lane-track"><span class="nozzle"></span>${items}</div>
@@ -308,9 +363,36 @@ const WIDE = ["jar", "detergent", "wipes"];
     </div>`;
   }).join("");
   $$(".lane", wrap).forEach((el, i) => { el.style.setProperty("--d", Math.min(i, 6)); io.observe(el); });
-  const setW = () => $$(".lane-track", wrap).forEach(t => t.style.setProperty("--w", t.offsetWidth + 90 + "px"));
-  setW();
-  window.addEventListener("resize", setW);
+
+  const lanes = $$(".lane-track", wrap).map(track => ({
+    track,
+    nozzle: $(".nozzle", track),
+    items: $$(".lb", track).map(el => ({ el, full: $(".full", el), w: el.classList.contains("wide") ? 64 : 34 }))
+  }));
+  const measure = () => lanes.forEach(l => {
+    l.pitch = l.track.offsetWidth / SLOTS;
+    l.nozzle.style.left = (FILL_SLOT + 0.5) * l.pitch - 7 + "px";
+  });
+  measure();
+  window.addEventListener("resize", measure);
+
+  conveyor(wrap, T, ms => {
+    lanes.forEach((l, i) => {
+      const lt = ms + i * 190; // neighbouring lines run slightly out of step, like a real floor
+      const cycle = Math.floor(lt / T), t = lt % T;
+      const moving = t < MOVE;
+      const e = moving ? easeInOut(t / MOVE) : 1;
+      l.track.classList.toggle("pour", !moving && t - MOVE < DWELL * 0.85);
+      for (let id = cycle - SLOTS; id <= cycle; id++) {
+        const slot = cycle - id; // 0 enters from the left, SLOTS leaves on the right
+        const it = l.items[((id % POOL) + POOL) % POOL];
+        const fill = slot < FILL_SLOT ? 0 : slot > FILL_SLOT ? 1
+          : moving ? 0 : easeInOut(Math.min(1, (t - MOVE) / (DWELL * 0.85)));
+        it.el.style.transform = `translateX(${(slot - 0.5 + e) * l.pitch - it.w / 2}px)`;
+        it.full.style.clipPath = `inset(${((1 - fill) * 100).toFixed(1)}% 0 0 0)`;
+      }
+    });
+  });
 })();
 
 /* ----------------------------------------------------------

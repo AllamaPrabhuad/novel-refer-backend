@@ -71,3 +71,16 @@ and turn on auto-deployment; every later push to `hostinger-site` goes live by i
 Hostinger's official API toolkit. It needs a Hostinger API token in `HOSTINGER_API_TOKEN` (hPanel →
 Account → API) and network access to Hostinger's API and upload hosts. The domain must already
 exist as a website in the Hostinger account.
+
+### Hosting on a VPS (e.g. Hostinger VPS)
+
+On a fresh Ubuntu/Debian VPS, run as root:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/AllamaPrabhuad/novel-refer-backend/claude/b2b-baby-care-website-vmwutq/site/vps-setup.sh | bash
+```
+
+`site/vps-setup.sh` installs nginx + PHP, serves the `hostinger-site` branch from
+`/var/www/<domain>/public_html`, issues a Let's Encrypt certificate once the domain's A records point
+at the server, and pulls new versions from GitHub every 5 minutes (so `npm run deploy:hostinger`
+goes live by itself).

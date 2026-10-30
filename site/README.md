@@ -64,3 +64,10 @@ enquiry, brochure download and sample request to `CONTACT.email`, and keeps a CS
 contains only the files that belong in `public_html`. Connect that branch once in hPanel →
 Websites → your site → Advanced → Git (install path left empty, so it deploys into `public_html`)
 and turn on auto-deployment; every later push to `hostinger-site` goes live by itself.
+
+### Deploying through the Hostinger API (no hPanel clicks)
+
+`npm run deploy:hostinger:api` builds the package and deploys it to the domain in `SITE.url` with
+Hostinger's official API toolkit. It needs a Hostinger API token in `HOSTINGER_API_TOKEN` (hPanel →
+Account → API) and network access to Hostinger's API and upload hosts. The domain must already
+exist as a website in the Hostinger account.

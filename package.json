@@ -9,6 +9,7 @@
     "build:site": "node site/build.mjs",
     "build:assets": "node site/make-assets.mjs",
     "build:hostinger": "node site/build-hostinger.mjs",
-    "deploy:hostinger": "bash site/deploy-hostinger.sh"
+    "deploy:hostinger": "bash site/deploy-hostinger.sh",
+    "deploy:hostinger:api": "node site/deploy-hostinger-api.mjs"
   }
 }

@@ -1,6 +1,7 @@
 # Launch checklist — babywipesmanufacturer.com
 
 ## 1. Go live
+Either let Claude do it through the Hostinger API (`npm run deploy:vps`, needs an API token), or by hand:
 - [ ] VPS: run the one-line setup in the hPanel browser terminal (see `site/README.md`)
 - [ ] DNS: `A @` and `A www` → VPS IP (hPanel → Domains → DNS records)
 - [ ] Wait for SSL (automatic within ~15 minutes after DNS)

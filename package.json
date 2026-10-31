@@ -10,7 +10,8 @@
     "build:assets": "node site/make-assets.mjs",
     "build:hostinger": "node site/build-hostinger.mjs",
     "deploy:hostinger": "bash site/deploy-hostinger.sh",
-    "deploy:hostinger:api": "node site/deploy-hostinger-api.mjs"
+    "deploy:hostinger:api": "node site/deploy-hostinger-api.mjs",
+    "deploy:vps": "node site/deploy-vps-api.mjs"
   },
   "devDependencies": {
     "qrcode": "^1.5.4"

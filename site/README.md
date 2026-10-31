@@ -80,6 +80,22 @@ On a fresh Ubuntu/Debian VPS, run as root:
 curl -fsSL https://raw.githubusercontent.com/AllamaPrabhuad/novel-refer-backend/claude/b2b-baby-care-website-vmwutq/site/vps-setup.sh | bash
 ```
 
+Or let the Hostinger API do everything — DNS, OS install and website setup — in one command:
+
+```bash
+npm run deploy:vps -- --dry-run
+```
+
+```bash
+npm run deploy:vps
+```
+
+`site/deploy-vps-api.mjs` points the domain (and `www`) at the VPS in Hostinger DNS without touching
+email records, stores `vps-setup.sh` as a post-install script, installs Ubuntu 24.04 with it, and waits
+for the site. A new VPS (state `initial`) is set up without erasing anything; a VPS that already has an
+OS is only reinstalled with `--wipe`, because that erases its disk. It needs `HOSTINGER_API_TOKEN`
+and network access to `developers.hostinger.com`. Afterwards run `novel-setup` on the VPS.
+
 `site/vps-setup.sh` installs nginx + PHP, serves the `hostinger-site` branch from
 `/var/www/<domain>/public_html`, issues a Let's Encrypt certificate once the domain's A records point
 at the server, and pulls new versions from GitHub every 5 minutes (so `npm run deploy:hostinger`

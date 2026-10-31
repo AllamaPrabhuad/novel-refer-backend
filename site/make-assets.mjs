@@ -290,6 +290,128 @@ const OG = `<!doctype html><html><head><meta charset="utf-8">${FONTS}<style>${BA
 
 const LOGO = `<!doctype html><html><head><style>body{margin:0;width:512px;height:512px;background:transparent}svg{width:512px;height:512px;display:block}</style></head><body>${DROP}</body></html>`;
 
+/* ---------- spec sheets (public, one per category) ---------- */
+const SALES = path.resolve(here, "../sales");
+const specSheet = c => `<!doctype html><html><head><meta charset="utf-8">${FONTS}<style>${BASE_CSS}
+  @page { size: A4; margin: 14mm 14mm 16mm; }
+  body { background: #fff; font-size: 9.5pt; }
+  .head { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #413F3D; padding-bottom: 4mm; }
+  .head .brand { display: flex; align-items: center; gap: 8px; font-family: "Fraunces", serif; font-size: 14pt; font-weight: 600; }
+  .head .brand svg { width: 9mm; }
+  .head span { font-size: 7.5pt; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #697184; }
+  .hero { display: grid; grid-template-columns: 1fr 52mm; gap: 6mm; align-items: center; margin-top: 6mm; }
+  h1 { font-size: 22pt; } h1 em { color: #697184; }
+  .lead { margin-top: 3mm; color: #5A5654; line-height: 1.55; }
+  .art-row { display: flex; align-items: flex-end; justify-content: center; height: 34mm; background: ${c.heroBg}; border-radius: 12px; padding: 3mm; }
+  .art-row .a { width: 13mm; margin-left: -2mm; } .art-row .a-wipes, .art-row .a-jar, .art-row .a-detergent { width: 28mm; }
+  h2 { font-size: 12.5pt; margin: 6mm 0 2.5mm; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; vertical-align: top; padding: 2.2mm 3mm; border-bottom: 1px solid #E9E5E3; }
+  th { width: 32%; font-size: 7pt; letter-spacing: .1em; text-transform: uppercase; color: #697184; font-weight: 800; }
+  .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5mm; }
+  .g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5mm; }
+  .box { border: 1px solid #E9E5E3; border-radius: 8px; padding: 2.5mm 3mm; break-inside: avoid; }
+  .box b { display: block; font-size: 9.5pt; }
+  .box p { font-size: 8pt; color: #5A5654; margin-top: 1mm; line-height: 1.45; }
+  .chips { margin-top: 1.5mm; display: flex; flex-wrap: wrap; gap: 1mm; }
+  .chips span { font-size: 6.5pt; font-weight: 700; background: #F2F1EF; border-radius: 99px; padding: .5mm 2mm; }
+  .foot { margin-top: 7mm; display: flex; justify-content: space-between; gap: 4mm; padding: 4mm 5mm; background: #413F3D; color: #F2F1EF; border-radius: 10px; font-size: 8.5pt; font-weight: 700; break-inside: avoid; }
+  section { break-inside: avoid; }
+</style></head><body>
+  <div class="head"><div class="brand">${DROP} Novel Tissues</div><span>Private label spec sheet</span></div>
+  <div class="hero">
+    <div><p class="kick">${c.kicker}</p><h1>${c.h1}</h1><p class="lead">${c.lead}</p></div>
+    <div class="art-row">${c.art.map(a => art(a.type, a.pal ?? 2, a.count ? `data-count="${a.count}"` : "")).join("")}</div>
+  </div>
+  <section><h2>Specifications</h2><table><tbody>${c.specs.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}</tbody></table></section>
+  <section><h2>What we make</h2><div class="g3">${c.products.map(([n, d, f]) => `<div class="box"><b>${n}</b><p>${d}</p><div class="chips">${f.map(x => `<span>${x}</span>`).join("")}</div></div>`).join("")}</div></section>
+  <section><h2>${c.packsTitle}</h2><div class="g2">${c.packs.map(p => `<div class="box"><b>${p.name}</b><p>${p.text}</p></div>`).join("")}</div></section>
+  <section><h2>${c.basesTitle}</h2><div class="g3">${c.bases.map(([n, d]) => `<div class="box"><b>${n}</b><p>${d}</p></div>`).join("")}</div></section>
+  <section><h2>Customisation</h2><div class="g3">${c.custom.map(([n, d]) => `<div class="box"><b>${n}</b><p>${d}</p></div>`).join("")}</div></section>
+  <div class="foot"><span>Samples, quotes &amp; visits: ${contactLines.join(" · ")}</span></div>
+</body></html>`;
+
+/* ---------- pitch deck (16:9, for meetings) ---------- */
+const slide = (inner, cls = "") => `<section class="s ${cls}">${inner}<div class="sf"><span>Novel Tissues · Private label baby care</span><span>${domain}</span></div></section>`;
+const DECK = `<!doctype html><html><head><meta charset="utf-8">${FONTS}<style>${BASE_CSS}
+  @page { size: 1280px 720px; margin: 0; }
+  .s { width: 1280px; height: 720px; position: relative; overflow: hidden; page-break-after: always; background: #F2F1EF; padding: 72px 88px; }
+  .s:last-child { page-break-after: auto; }
+  .dark { background: #413F3D; color: #F2F1EF; } .dark em { color: #D8CFD0; } .dark p { color: rgba(242,241,239,.75); }
+  .k { font-size: 15px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #697184; }
+  .dark .k { color: #D8CFD0; }
+  h1 { font-size: 76px; line-height: 1; margin-top: 26px; letter-spacing: -.03em; }
+  h2 { font-size: 54px; line-height: 1.05; margin-top: 18px; max-width: 980px; }
+  p { font-size: 22px; line-height: 1.5; color: #5A5654; margin-top: 22px; max-width: 760px; }
+  .sf { position: absolute; left: 88px; right: 88px; bottom: 30px; display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #697184; }
+  .dark .sf { color: rgba(242,241,239,.5); }
+  .stage { position: absolute; right: 70px; bottom: 80px; display: flex; align-items: flex-end; }
+  .stage .a { width: 92px; margin-left: -14px; filter: drop-shadow(0 16px 18px rgba(0,0,0,.3)); }
+  .stage .a-wipes { width: 230px; } .stage .a-jar, .stage .a-detergent { width: 140px; }
+  .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 44px; }
+  .num { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 22px; padding: 26px 28px; }
+  .num b { font-family: "Fraunces", serif; font-size: 58px; font-weight: 500; color: #D8CFD0; line-height: 1; }
+  .num span { display: block; margin-top: 10px; font-size: 18px; font-weight: 700; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+  .card { background: #fff; border-radius: 22px; padding: 26px; }
+  .card h3 { font-size: 26px; }
+  .card p { font-size: 17px; margin-top: 10px; }
+  .list { columns: 2; column-gap: 50px; margin-top: 34px; font-size: 21px; line-height: 1.9; list-style: none; padding: 0; }
+  .list li::before { content: "✓  "; color: #697184; font-weight: 800; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 36px; }
+  .step { background: #fff; border-radius: 20px; padding: 22px 24px; }
+  .step b { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #413F3D; color: #F2F1EF; font-family: "Fraunces", serif; font-size: 20px; }
+  .step h3 { font-size: 22px; margin-top: 12px; } .step p { font-size: 15px; margin-top: 6px; }
+  .contact { margin-top: 40px; font-size: 28px; font-weight: 800; display: grid; gap: 10px; }
+</style></head><body>
+${slide(`<div class="k">Private label manufacturing</div><h1>Your baby-care brand,<br/><em>made under one roof.</em></h1><p>Baby wipes, baby cosmetics and baby laundry &amp; cleaning liquids — formulated, filled, packed and shipped under your brand.</p><div class="stage">${art("detergent", 4)}${art("pump", 0)}${art("wipes", 2)}${art("jar", 3)}${art("tube", 1)}</div>`, "dark")}
+${slide(`<div class="k">The opportunity</div><h2>Most baby brands juggle three suppliers. <em>You need one.</em></h2><p>A wipes converter, a cosmetics filler and a detergent maker means three contracts, three quality standards and three delivery schedules. Novel Tissues makes all of it.</p><div class="cards"><div class="card"><h3>Baby wipes</h3><p>Every count from pocket packs to 100+, in your substrate, lotion and lid.</p></div><div class="card"><h3>Baby cosmetics</h3><p>Shampoos, washes, lotions, creams, oils and rash creams.</p></div><div class="card"><h3>Laundry &amp; cleaners</h3><p>Baby detergents, conditioners, bottle and surface cleansers.</p></div></div>`)}
+${slide(`<div class="k">Scale</div><h2>The numbers behind every pack <em>with your name on it.</em></h2><div class="nums"><div class="num"><b>1.5 Cr+</b><span>wipes every month</span></div><div class="num"><b>9</b><span>wipes machines</span></div><div class="num"><b>8</b><span>liquid lines in Pondicherry</span></div><div class="num"><b>5 Lakh</b><span>sq.ft manufacturing</span></div><div class="num"><b>2</b><span>wipes regions: North &amp; South</span></div><div class="num"><b>1</b><span>partner for the whole range</span></div></div>`, "dark")}
+${slide(`<div class="k">Our network</div><h2>North. South. <em>And a liquids campus in Pondicherry.</em></h2><div class="cards"><div class="card"><h3>North India wipes plant</h3><p>Wipes made close to North, Central, West and East India markets.</p></div><div class="card"><h3>South India wipes plant</h3><p>Wipes for the south and export lanes — and a backup for the north.</p></div><div class="card"><h3>Pondicherry liquids campus</h3><p>Eight manufacturing lines for every baby liquid, under one roof.</p></div></div>`)}
+${slide(`<div class="k">${wipes.kicker}</div><h2>Private label <em>baby wipes</em></h2><ul class="list">${wipes.specs.slice(0, 8).map(([k, v]) => `<li><b>${k}:</b> ${v.split(";")[0]}</li>`).join("")}</ul>`)}
+${slide(`<div class="k">Pondicherry liquids campus</div><h2>Shampoos, lotions, creams, oils <em>and laundry liquids.</em></h2><ul class="list">${[...bath.products, ...skin.products, ...home.products].slice(0, 14).map(([n]) => `<li>${n}</li>`).join("")}</ul>`)}
+${slide(`<div class="k">How it works</div><h2>From first call to <em>first shipment.</em></h2><div class="steps">${[["Brief &amp; NDA", "Your products, price, channels and volumes."], ["Formulation &amp; samples", "Our bases or your formula, sampled side by side."], ["Packaging &amp; artwork", "Formats chosen, artwork checked before print."], ["Testing &amp; approvals", "Stability and quality checks on the final pack."], ["Pilot &amp; production", "A pilot batch, then scheduled production."], ["Dispatch &amp; repeat", "QC-released goods and forecast-based reorders."]].map(([t, d], i) => `<div class="step"><b>${i + 1}</b><h3>${t}</h3><p>${d}</p></div>`).join("")}</div>`)}
+${slide(`<div class="k">Quality</div><h2>Made for the most sensitive skin <em>there is.</em></h2><ul class="list"><li>Raw material checks</li><li>In-process controls</li><li>Batch-wise release</li><li>Batch traceability</li><li>pH-balanced, mild bases</li><li>Free-from options</li><li>Confidential by default — NDAs</li><li>We never compete with you</li></ul>`, "dark")}
+${slide(`<div class="k">Who we make for</div><h2>Built for brands that <em>sell to parents.</em></h2><ul class="list"><li>D2C baby brands</li><li>Retail &amp; supermarket chains</li><li>Pharmacy chains</li><li>E-commerce &amp; quick-commerce</li><li>Hospitals &amp; institutions</li><li>Export &amp; distributors</li></ul>`)}
+${slide(`<div class="k">Next steps</div><h2>Let's build your <em>baby-care range.</em></h2><p>Send your product list, target price and volumes. We'll come back with options, samples and a plan.</p><div class="contact">${contactLines.map(l => `<span>${l}</span>`).join("")}</div><div class="stage">${art("pump", 0)}${art("wipes", 2)}${art("tube", 1)}</div>`, "dark")}
+</body></html>`;
+
+/* ---------- roll-up banner 85 × 200 cm with QR code ---------- */
+const QRCode = require("qrcode");
+const expoUrl = SITE.url.replace(/\/$/, "") + "/expo/";
+const qrSvg = await QRCode.toString(expoUrl, { type: "svg", margin: 0, color: { dark: "#413F3D", light: "#00000000" } });
+const BANNER = `<!doctype html><html><head><meta charset="utf-8">${FONTS}<style>${BASE_CSS}
+  @page { size: 850mm 2000mm; margin: 0; }
+  body { width: 850mm; height: 2000mm; background: #F2F1EF; position: relative; overflow: hidden; }
+  .top { background: #413F3D; color: #F2F1EF; padding: 70mm 60mm 80mm; }
+  .brand { display: flex; align-items: center; gap: 18mm; font-family: "Fraunces", serif; font-size: 70mm; font-weight: 600; }
+  .brand svg { width: 70mm; }
+  .tag { font-size: 18mm; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #D8CFD0; margin-top: 50mm; }
+  h1 { font-size: 92mm; line-height: 1; margin-top: 20mm; letter-spacing: -.03em; color: #F2F1EF; }
+  h1 em { color: #D8CFD0; }
+  .stage { display: flex; align-items: flex-end; justify-content: center; margin: -10mm 40mm 0; height: 360mm; }
+  .stage .a { width: 120mm; margin-left: -18mm; filter: drop-shadow(0 20mm 20mm rgba(0,0,0,.2)); }
+  .stage .a-wipes { width: 300mm; } .stage .a-jar, .stage .a-detergent { width: 190mm; }
+  .nums { display: grid; grid-template-columns: 1fr 1fr; gap: 24mm; padding: 60mm 60mm 0; }
+  .nums b { display: block; font-family: "Fraunces", serif; font-size: 96mm; font-weight: 500; line-height: 1; color: #413F3D; }
+  .nums span { font-size: 22mm; font-weight: 700; color: #697184; }
+  .products { padding: 60mm 60mm 0; font-size: 26mm; line-height: 1.6; font-weight: 600; color: #413F3D; }
+  .qr { position: absolute; left: 60mm; right: 60mm; bottom: 70mm; display: flex; align-items: center; gap: 40mm; background: #fff; border-radius: 30mm; padding: 40mm; }
+  .qr svg { width: 260mm; height: 260mm; flex: none; }
+  .qr b { display: block; font-family: "Fraunces", serif; font-size: 52mm; font-weight: 500; line-height: 1.05; color: #413F3D; }
+  .qr span { display: block; margin-top: 16mm; font-size: 24mm; font-weight: 700; color: #697184; }
+</style></head><body>
+  <div class="top">
+    <div class="brand">${DROP} Novel Tissues</div>
+    <div class="tag">Private label baby care</div>
+    <h1>Your baby-care brand, <em>made under one roof.</em></h1>
+  </div>
+  <div class="stage">${art("detergent", 4)}${art("pump", 0)}${art("wipes", 2)}${art("jar", 3)}</div>
+  <div class="nums"><div><b>1.5 Cr+</b><span>wipes every month</span></div><div><b>8</b><span>liquid lines</span></div><div><b>9</b><span>wipes machines</span></div><div><b>5 Lakh</b><span>sq.ft manufacturing</span></div></div>
+  <div class="products">Baby wipes · Shampoo &amp; wash · Lotion, cream &amp; oil · Rash cream · Baby laundry detergent · Bottle &amp; surface cleansers</div>
+  <div class="qr">${qrSvg}<div><b>Scan for our brochure &amp; samples</b><span>${domain}/expo</span></div></div>
+</body></html>`;
+
 async function render(page, html) {
   await page.setContent(html, { waitUntil: "networkidle" });
   await page.addScriptTag({ path: path.join(OUT, "config.js") });
@@ -315,6 +437,26 @@ try {
   await render(og, OG);
   await og.screenshot({ path: path.join(OUT, "og-image.png") });
   console.log("wrote public/b2b/og-image.png");
+
+  for (const c of CATEGORIES) {
+    const sp = await browser.newPage();
+    await render(sp, specSheet(c));
+    const file = path.join(OUT, "downloads", `spec-sheet-${c.slug}.pdf`);
+    await sp.pdf({ path: file, printBackground: true, preferCSSPageSize: true });
+    console.log("wrote", path.relative(process.cwd(), file));
+  }
+
+  fs.mkdirSync(SALES, { recursive: true });
+  const deck = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  await render(deck, DECK);
+  await deck.pdf({ path: path.join(SALES, "novel-tissues-pitch-deck.pdf"), printBackground: true, preferCSSPageSize: true });
+  console.log("wrote sales/novel-tissues-pitch-deck.pdf");
+
+  const banner = await browser.newPage();
+  await render(banner, BANNER);
+  await banner.pdf({ path: path.join(SALES, "rollup-banner-85x200cm.pdf"), printBackground: true, preferCSSPageSize: true });
+  fs.writeFileSync(path.join(SALES, "qr-expo.svg"), qrSvg);
+  console.log("wrote sales/rollup-banner-85x200cm.pdf and sales/qr-expo.svg");
 
   const logo = await browser.newPage({ viewport: { width: 512, height: 512 } });
   await logo.setContent(LOGO);

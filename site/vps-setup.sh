@@ -76,6 +76,7 @@ server {
     }
 
     location ~ /\.(git|ht) { deny all; }
+    location = /api/lib.php { deny all; }
 
     location ~* \.(css|js)\$ { expires 7d; }
     location ~* \.(png|pdf)\$ { expires 30d; }
@@ -89,6 +90,28 @@ rm -f /etc/nginx/sites-enabled/default
 nginx -t -q
 systemctl enable -q --now nginx
 systemctl reload nginx
+
+say "Installing the novel-setup command (email + leads dashboard settings)"
+cat > /usr/local/bin/novel-setup <<'SETUP'
+#!/usr/bin/env bash
+# Writes the server-only settings for lead emails and the /admin/ leads dashboard.
+set -euo pipefail
+CONFIG="__SITE_DIR__/novel-config.php"
+echo "Lead emails are sent through a mailbox so they reach the inbox, not spam."
+read -rp "Mailbox that sends the emails (e.g. sales@__DOMAIN__): " SMTP_USER
+read -rsp "Password of that mailbox: " SMTP_PASS; echo
+read -rp "SMTP server [smtp.hostinger.com]: " SMTP_HOST; SMTP_HOST=${SMTP_HOST:-smtp.hostinger.com}
+read -rp "SMTP port [465]: " SMTP_PORT; SMTP_PORT=${SMTP_PORT:-465}
+read -rp "Where should lead notifications go [__LEAD__]: " LEAD; LEAD=${LEAD:-__LEAD__}
+read -rp "Google Sheet web-app URL (optional, Enter to skip): " HOOK
+read -rsp "Choose a password for the leads dashboard (/admin/): " ADMIN; echo
+SMTP_USER="$SMTP_USER" SMTP_PASS="$SMTP_PASS" SMTP_HOST="$SMTP_HOST" SMTP_PORT="$SMTP_PORT" LEAD="$LEAD" HOOK="$HOOK" ADMIN="$ADMIN" \
+php -r '$c = ["lead_email" => getenv("LEAD"), "smtp" => ["host" => getenv("SMTP_HOST"), "port" => (int) getenv("SMTP_PORT"), "user" => getenv("SMTP_USER"), "pass" => getenv("SMTP_PASS"), "from" => getenv("SMTP_USER")], "admin_password_hash" => password_hash(getenv("ADMIN"), PASSWORD_DEFAULT), "sheet_webhook" => getenv("HOOK"), "auto_reply" => true]; echo "<?php\nreturn " . var_export($c, true) . ";\n";' > "$CONFIG"
+chown root:www-data "$CONFIG"; chmod 640 "$CONFIG"
+echo "Saved. Leads dashboard: https://__DOMAIN__/admin/"
+SETUP
+sed -i "s#__SITE_DIR__#$SITE_DIR#g; s#__DOMAIN__#$DOMAIN#g; s#__LEAD__#$EMAIL#g" /usr/local/bin/novel-setup
+chmod 755 /usr/local/bin/novel-setup
 
 say "Scheduling automatic updates and SSL"
 cat > /etc/cron.d/novel-tissues <<CRON
@@ -107,6 +130,7 @@ if [ "$DNS_IP" = "$SERVER_IP" ]; then
   say "Issuing the SSL certificate"
   certbot --nginx -n --agree-tos -m "$EMAIL" --redirect -d "$DOMAIN" -d "www.$DOMAIN" || echo "SSL will be retried automatically every 15 minutes."
   say "Done — https://$DOMAIN is live."
+  echo "Next: run  novel-setup  to connect lead emails and set the leads dashboard password."
 else
   say "Website installed. One step left:"
   echo "Point the domain at this server in hPanel → Domains → $DOMAIN → DNS records:"
@@ -115,4 +139,5 @@ else
   echo "(currently $DOMAIN points to: ${DNS_IP:-nothing})"
   echo "SSL is issued automatically within 15 minutes after the DNS change takes effect."
   echo "Until then you can preview the site at: http://$SERVER_IP"
+  echo "Then run  novel-setup  to connect lead emails and set the leads dashboard password."
 fi

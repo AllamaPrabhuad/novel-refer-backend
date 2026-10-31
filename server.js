@@ -53,14 +53,15 @@ app.post("/proxy/enroll", (req, res) => {
 // B2B private label website
 app.use("/b2b", express.static(path.join(__dirname, "public/b2b")));
 
-// Leads from the site: type is "enquiry", "brochure" or "sample"
+// Leads from the site: type is "enquiry", "brochure", "sample" or "visit"
 app.post("/api/enquiry", async (req, res) => {
   const b = req.body || {};
   if (b.website) return res.json({ ok: true }); // honeypot
 
-  const type = ["enquiry", "brochure", "sample"].includes(b.type) ? b.type : "enquiry";
+  const type = ["enquiry", "brochure", "sample", "visit"].includes(b.type) ? b.type : "enquiry";
   const required = ["name", "company", "email", "phone"];
   if (type === "sample") required.push("address", "city", "pincode");
+  if (type === "visit") required.push("mode", "date");
   if (required.some(k => !String(b[k] || "").trim())) {
     return res.status(400).json({ ok: false, error: "Missing required fields" });
   }
@@ -71,6 +72,7 @@ app.post("/api/enquiry", async (req, res) => {
     name: b.name, company: b.company, email: b.email, phone: b.phone,
     business: b.business, products: b.products, volume: b.volume, launch: b.launch,
     formula: b.formula, concept: b.concept, notes: b.notes,
+    mode: b.mode, plant: b.plant, date: b.date, time: b.time,
     address: b.address, city: b.city, pincode: b.pincode, page: b.page
   };
   console.log(`B2B ${type}`, JSON.stringify(lead));

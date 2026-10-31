@@ -84,3 +84,31 @@ curl -fsSL https://raw.githubusercontent.com/AllamaPrabhuad/novel-refer-backend/
 `/var/www/<domain>/public_html`, issues a Let's Encrypt certificate once the domain's A records point
 at the server, and pulls new versions from GitHub every 5 minutes (so `npm run deploy:hostinger`
 goes live by itself).
+
+## Leads: email, Google Sheet and dashboard
+
+On the live site (Hostinger or VPS) every enquiry, brochure download, sample request and visit booking:
+
+1. is saved to `novel-tissues-leads.jsonl` next to `public_html` (never inside it);
+2. is emailed to the sales inbox, with a one-click WhatsApp link to the buyer;
+3. gets an automatic thank-you email to the buyer (with the brochure link for brochure downloads);
+4. is copied to a Google Sheet when `sheet_webhook` is set (`site/google-sheet-leads.gs` has the 2-minute setup);
+5. appears in the private dashboard at `/admin/` with status, notes, filters and CSV export.
+
+Settings live in `novel-config.php` next to `public_html` — see `site/hostinger/novel-config.example.php`.
+On a VPS, run `novel-setup` once to create it. Email is sent through your mailbox over SMTP so it lands in the inbox.
+
+## Content you can switch on
+
+`site/content-more.mjs` holds sections that stay hidden until you add real data: factory photos and
+video, certifications, clients, case studies, MOQs and lead times, company story, and price bands for
+the price estimator. Fill them in and run `npm run build:site`.
+
+`public/b2b/config.js` also takes the WhatsApp number, a booking-page link, the Google Analytics 4 ID
+and the Search Console / Bing verification codes.
+
+## Sales materials
+
+`sales/` holds the pitch deck, the roll-up banner with QR code, outreach templates, marketplace listing
+copy, a 12-month blog calendar and the launch checklist. `npm run build:assets` regenerates the PDFs
+(and the product spec sheets in `public/b2b/downloads/`).

@@ -11,5 +11,8 @@
     "build:hostinger": "node site/build-hostinger.mjs",
     "deploy:hostinger": "bash site/deploy-hostinger.sh",
     "deploy:hostinger:api": "node site/deploy-hostinger-api.mjs"
+  },
+  "devDependencies": {
+    "qrcode": "^1.5.4"
   }
 }

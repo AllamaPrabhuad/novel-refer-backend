@@ -565,3 +565,28 @@ renderPlan();
   show(0);
 })();
 
+
+/* ----------------------------------------------------------
+   PRICE ESTIMATOR — only present when site/content-more.mjs has price bands
+   ---------------------------------------------------------- */
+(function prices() {
+  const data = $("#priceData");
+  if (!data) return;
+  const bands = JSON.parse(data.textContent);
+  const product = $("#priceProduct"), qty = $("#priceQty"), out = $("#priceOut");
+  const rupees = n => "₹" + n.toLocaleString("en-IN", { maximumFractionDigits: 2 });
+  const render = () => {
+    const p = bands[+product.value];
+    const q = Math.max(0, Math.round(+qty.value || 0));
+    const band = [...p.bands].reverse().find(b => q >= b.from);
+    if (!band) {
+      out.innerHTML = `<p>Our minimum for ${esc(p.product)} starts at <b>${inr(p.bands[0].from)} ${esc(p.unit)}s</b>.</p>`;
+      return;
+    }
+    out.innerHTML = `<b>${rupees(band.low)} – ${rupees(band.high)}</b><span>per ${esc(p.unit)}</span>
+      <p>About ${rupees(band.low * q)} – ${rupees(band.high * q)} for ${inr(q)} ${esc(p.unit)}s</p>`;
+  };
+  product.addEventListener("change", () => { qty.value = bands[+product.value].bands[0].from; render(); });
+  qty.addEventListener("input", render);
+  render();
+})();

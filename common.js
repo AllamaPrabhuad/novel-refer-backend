@@ -13,6 +13,21 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const inr = n => Math.round(n).toLocaleString("en-IN");
 const scrollHooks = [];
 
+/* ---------- Google Analytics 4 (only when SITE.ga4 is set in config.js) ---------- */
+window.dataLayer = window.dataLayer || [];
+function track(event, params = {}) {
+  if (typeof window.gtag === "function") window.gtag("event", event, params);
+}
+if (SITE.ga4) {
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag("js", new Date());
+  window.gtag("config", SITE.ga4, { anonymize_ip: true });
+  const tag = document.createElement("script");
+  tag.async = true;
+  tag.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(SITE.ga4);
+  document.head.appendChild(tag);
+}
+
 const store = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (_) { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) { /* private mode */ } }
@@ -186,6 +201,7 @@ async function sendLead(data) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...data, page: location.href })
     });
+    if (res.ok) track("generate_lead", { lead_type: data.type || "enquiry" });
     return res.ok;
   } catch (_) {
     return false;
@@ -322,11 +338,65 @@ const MODALS_HTML = `
       </div>
     </div>
   </div>
+</div>
+<div class="modal" id="mVisit" role="dialog" aria-modal="true" aria-labelledby="mVisitT" hidden>
+  <div class="modal-scrim" data-close></div>
+  <div class="modal-card">
+    <button class="modal-x" type="button" data-close aria-label="Close">✕</button>
+    <div class="modal-grid">
+      <div class="modal-side side-visit">
+        <div class="cal" aria-hidden="true">
+          <div class="cal-head"><span>Visit day</span><b>10:30</b></div>
+          <div class="cal-grid">${Array.from({ length: 28 }, (_, i) => `<i${i === 17 ? ' class="on"' : ""}></i>`).join("")}</div>
+        </div>
+        <ul class="inside">
+          <li>Walk the wipes lines or the Pondicherry liquids campus</li>
+          <li>Or meet us on a video call with your brief</li>
+          <li>Meet the people who will make your products</li>
+          <li>We confirm the slot with you</li>
+        </ul>
+      </div>
+      <div class="modal-main">
+        <form class="modal-form" id="fVisit" novalidate>
+          <p class="kicker">Meet us</p>
+          <h3 id="mVisitT">Book a factory visit or video call</h3>
+          <p class="modal-lead">See how your products would be made, or talk through your range with our private label team.</p>
+          <div class="field two">
+            <div><label for="vMode">Meeting *</label><select id="vMode" name="mode" required><option>Factory visit</option><option>Video call</option></select></div>
+            <div><label for="vPlant">Plant</label><select id="vPlant" name="plant"><option>Not sure yet</option><option>North India wipes plant</option><option>South India wipes plant</option><option>Pondicherry liquids campus</option></select></div>
+          </div>
+          <div class="field two">
+            <div><label for="vDate">Preferred date *</label><input id="vDate" name="date" type="date" required /></div>
+            <div><label for="vTime">Preferred time</label><select id="vTime" name="time"><option>Morning (10 am – 1 pm)</option><option>Afternoon (2 pm – 5 pm)</option></select></div>
+          </div>
+          ${contactFields("v")}
+          <div class="field"><label for="vNotes">What would you like to discuss?</label><textarea id="vNotes" name="notes" rows="2"></textarea></div>
+          <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <button type="submit" class="btn btn-peach btn-block">Request this slot</button>
+          <p class="form-err" role="alert"></p>
+          <p class="privacy cal-link" hidden>Prefer to pick a time yourself? <a class="link" target="_blank" rel="noopener" data-calendar-link href="#">Open our calendar</a>.</p>
+        </form>
+        <div class="modal-done" hidden>
+          <div class="done-burst"></div>
+          <h3>Request received</h3>
+          <p class="done-msg">We'll confirm the slot with you by email or phone.</p>
+          <button type="button" class="btn btn-ghost" data-open="brochure">Download our brochure →</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>`;
 
 (function modals() {
   document.body.insertAdjacentHTML("beforeend", MODALS_HTML);
-  const mB = $("#mBrochure"), mS = $("#mSample");
+  const mB = $("#mBrochure"), mS = $("#mSample"), mV = $("#mVisit");
+  const MODALS = { brochure: mB, sample: mS, visit: mV };
+  const tomorrow = new Date(Date.now() + 864e5).toISOString().slice(0, 10);
+  $("#vDate").min = tomorrow;
+  if (CONTACT.calendly) {
+    $("[data-calendar-link]", mV).href = CONTACT.calendly;
+    $(".cal-link", mV).hidden = false;
+  }
   renderArt(mS);
   const brochureUrl = ROOT + SITE.brochure;
   $("[data-brochure-link]", mB).href = brochureUrl;
@@ -338,7 +408,7 @@ const MODALS_HTML = `
     if (lastFocus) lastFocus.focus();
   };
   const open = which => {
-    const m = which === "sample" ? mS : mB;
+    const m = MODALS[which] || mB;
     $$(".modal").forEach(x => { x.hidden = x !== m; });
     lastFocus = document.activeElement;
     document.body.classList.add("modal-open");
@@ -375,6 +445,7 @@ const MODALS_HTML = `
     document.body.appendChild(a);
     a.click();
     a.remove();
+    track("file_download", { file_name: SITE.brochure.split("/").pop() });
   }
 
   $("#fBrochure").addEventListener("submit", async e => {
@@ -430,7 +501,35 @@ const MODALS_HTML = `
     confetti();
   });
 
-  if (location.hash === "#brochure" || location.hash === "#sample") open(location.hash.slice(1));
+  $("#fVisit").addEventListener("submit", async e => {
+    e.preventDefault();
+    const form = e.target, err = $(".form-err", form);
+    if (!validContact(form)) { err.textContent = "Please fill in the highlighted fields."; return; }
+    err.textContent = "";
+    const d = { ...Object.fromEntries(new FormData(form).entries()), type: "visit" };
+    const btn = $("button[type=submit]", form);
+    btn.disabled = true;
+    btn.textContent = "Sending…";
+    let sent = true;
+    if (!d.website) {
+      rememberContact(d);
+      sent = await sendLead(d);
+    }
+    btn.disabled = false;
+    btn.textContent = "Request this slot";
+    if (!sent) {
+      mailtoLead(`${d.mode} request — ${d.company}`, [
+        `Name: ${d.name}`, `Company: ${d.company}`, `Email: ${d.email}`, `Phone: ${d.phone}`,
+        `Meeting: ${d.mode}`, `Plant: ${d.plant}`, `Date: ${d.date}`, `Time: ${d.time}`, d.notes ? `Notes: ${d.notes}` : ""
+      ]);
+      $(".done-msg", mV).textContent = "Your email app should open with the request filled in — just press send.";
+    }
+    form.hidden = true;
+    $(".modal-done", mV).hidden = false;
+    confetti();
+  });
+
+  if (["#brochure", "#sample", "#visit"].includes(location.hash)) open(location.hash.slice(1));
 })();
 
 function confetti() {
@@ -449,6 +548,21 @@ function confetti() {
     setTimeout(() => c.remove(), 4800);
   }
 }
+
+/* ---------- factory video: load YouTube only when the visitor presses play ---------- */
+document.addEventListener("click", e => {
+  const b = e.target.closest(".video-lite");
+  if (!b) return;
+  const f = document.createElement("iframe");
+  f.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(b.dataset.yt)}?autoplay=1&rel=0`;
+  f.title = "Factory tour";
+  f.allow = "autoplay; encrypted-media; picture-in-picture";
+  f.allowFullscreen = true;
+  const frame = document.createElement("div");
+  frame.className = "video-frame";
+  frame.appendChild(f);
+  b.replaceWith(frame);
+});
 
 /* ---------- contact details & misc ---------- */
 (function contacts() {
